@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MoviesInfo</string>
+    <string name="action_settings">Settings</string>
+    <string name="menu_theme">主题</string>
+    <string name="menu_like">评价</string>
+    <string name="menu_about">关于</string>
+    <string name="menu_settings">设置</string>
+    <string name="menu_share">分享</string>
+    <string name="openDrawerContentDesc">open main page drawer</string>
+    <string name="closeDrawerContentDesc">close main page drawer</string>
+</resources>
