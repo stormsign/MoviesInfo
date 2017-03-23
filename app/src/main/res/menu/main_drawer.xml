@@ -14,6 +14,6 @@
         android:icon="@drawable/svg_ic_evaluation"/>
     <item android:id="@+id/menu_about"
         android:title="@string/menu_about"
-        android:icon="@drawable/svg_ic_evaluation"/>
+        android:icon="@drawable/svg_ic_about"/>
 
 </menu>
