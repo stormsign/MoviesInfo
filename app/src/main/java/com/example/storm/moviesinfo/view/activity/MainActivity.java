@@ -1,26 +1,31 @@
 package com.example.storm.moviesinfo.view.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.storm.moviesinfo.R;
 
+import org.polaric.colorful.Colorful;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends BaseActivity {
 
     @BindView(R.id.main_drawer)
     DrawerLayout mDrawer;
@@ -30,8 +35,11 @@ public class MainActivity extends AppCompatActivity  {
     Toolbar mToolBar;
     @BindView(R.id.main_nav)
     NavigationView mNav;
+    @BindView(R.id.main_tab)
+    TabLayout mTab;
 
     private boolean isAppBarCollapsed;
+    private SwitchCompat mSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +69,27 @@ public class MainActivity extends AppCompatActivity  {
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        mTab.setBackgroundResource(Colorful.getThemeDelegate().getPrimaryColor().getColorRes());
+
         //左侧抽屉导航栏
         ImageView drawerHeaderImg = (ImageView) mNav.getHeaderView(0).findViewById(R.id.drawer_header_img);
-        Glide.with(this).load(R.drawable.pic_movies);
+        Glide.with(this).load(R.drawable.pic_movies).into(drawerHeaderImg);
+        mSwitch = (SwitchCompat) mNav.getHeaderView(0).findViewById(R.id.dayNightSwitch);
+        mSwitch.setChecked(!Colorful.getThemeDelegate().isDark());
+        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Colorful.config(MainActivity.this).dark(!isChecked).apply();
+                        recreate();
+                    }
+                }, 300);
+
+            }
+        });
+
     }
 
     @Override

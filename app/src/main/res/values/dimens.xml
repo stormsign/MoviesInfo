@@ -1,4 +1,6 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="main_drawer_header_height">160dp</dimen>
+    <dimen name="main_tab_height">40dp</dimen>
+    <dimen name="_main_nav_width">240dp</dimen>
 </resources>
