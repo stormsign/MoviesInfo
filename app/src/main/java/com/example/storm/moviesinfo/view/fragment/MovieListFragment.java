@@ -12,9 +12,11 @@ import com.example.storm.moviesinfo.R;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MovieListFragment extends Fragment {
 
-    public MainActivityFragment() {
+    private String fragmentName;
+
+    public MovieListFragment() {
 
     }
 

@@ -7,6 +7,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.storm.moviesinfo.R;
+import com.example.storm.moviesinfo.view.adapter.TabAdapter;
 
 import org.polaric.colorful.Colorful;
 
@@ -37,6 +40,8 @@ public class MainActivity extends BaseActivity {
     NavigationView mNav;
     @BindView(R.id.main_tab)
     TabLayout mTab;
+    @BindView(R.id.main_viewpager)
+    ViewPager mPager;
 
     private boolean isAppBarCollapsed;
     private SwitchCompat mSwitch;
@@ -70,6 +75,11 @@ public class MainActivity extends BaseActivity {
         toggle.syncState();
 
         mTab.setBackgroundResource(Colorful.getThemeDelegate().getPrimaryColor().getColorRes());
+        FragmentManager fm = getSupportFragmentManager();
+
+        TabAdapter adapter = new TabAdapter(fm);
+        mPager.setAdapter(adapter);
+
 
         //左侧抽屉导航栏
         ImageView drawerHeaderImg = (ImageView) mNav.getHeaderView(0).findViewById(R.id.drawer_header_img);
