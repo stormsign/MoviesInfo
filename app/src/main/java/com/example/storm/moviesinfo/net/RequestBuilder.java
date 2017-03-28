@@ -141,42 +141,15 @@ public class RequestBuilder {
     }
 
 //    正在上映电影列表
-    public Observable<MovieListResponse> getMovieInTheaterList(String city){
+    public Observable<MovieListResponse> getMovieInTheaterList(String city,
+                                                               RequestSubscriber<List<MovieBrief>> subscriber){
         Map<String, Object> map = new HashMap<>();
-        map.put("dtype", "json");
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
         Observable<MovieListResponse> movieList = service.getRecentMovieList(map);
         movieList.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new RequestSubscriber<MovieListResponse>(){
-            @Override
-            public void onStart() {
-                super.onStart();
-                Log.i("Log", "onStart");
-            }
-
-            @Override
-            public void onNext(MovieListResponse movieListResponse) {
-                super.onNext(movieListResponse);
-                Log.i("Log", "onNext");
-                Log.i("Log", "movieListResponse = "+movieListResponse.toString());
-            }
-
-            @Override
-            public void onCompleted() {
-                super.onCompleted();
-                Log.i("Log", "onCompleted");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                super.onError(e);
-                Log.i("Log", "onError");
-                e.printStackTrace();
-            }
-        });
-                /*.map(new Func1<MovieListResponse, MovieListWrapper>() {
+                .map(new Func1<MovieListResponse, MovieListWrapper>() {
                     @Override
                     public MovieListWrapper call(MovieListResponse movieListResponse) {
 
@@ -196,13 +169,13 @@ public class RequestBuilder {
 
                         return movieList.getData();
                     }
-                })*/;
+                })
+                .subscribe(subscriber);
         return movieList;
     }
 //    即将上映电影列表
     public Observable<MovieListResponse> getMovieInComingList(String city){
         Map<String, Object> map = new HashMap<>();
-        map.put("dtype", "json");
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
         Observable<MovieListResponse> movieList = service.getRecentMovieList(map);

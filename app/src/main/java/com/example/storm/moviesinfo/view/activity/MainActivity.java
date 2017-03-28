@@ -77,8 +77,8 @@ public class MainActivity extends BaseActivity {
 
         mTab.setBackgroundResource(Colorful.getThemeDelegate().getPrimaryColor().getColorRes());
         MovieListFragment fragment0 = MovieListFragment.newInstance(0);
-        MovieListFragment fragment1 = MovieListFragment.newInstance(1);
-        Fragment[] fragments = new Fragment[]{fragment0, fragment1};
+//        MovieListFragment fragment1 = MovieListFragment.newInstance(1);
+        Fragment[] fragments = new Fragment[]{fragment0};
         TabAdapter adapter = new TabAdapter(getSupportFragmentManager(), fragments);
         adapter.setPageTitle(new String[]{"正在上映", "即将上映"});
         mPager.setAdapter(adapter);

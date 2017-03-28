@@ -2,13 +2,18 @@ package com.example.storm.moviesinfo.presenter.impl;
 
 import android.util.Log;
 
+import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.model.movielist.MovieListResponse;
 import com.example.storm.moviesinfo.net.RequestBuilder;
 import com.example.storm.moviesinfo.net.RequestSubscriber;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
 
+import java.util.List;
+
 import rx.Observable;
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by khb on 2017/3/28.
@@ -27,13 +32,9 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
 
     @Override
     public void loadData(String city, int dataType) {
-        Observable<MovieListResponse> observable;
-        if (dataType == 0){
-            observable = builder.getMovieInTheaterList(city);
-        }else {
-            observable = builder.getMovieInComingList(city);
-        }
-        mSubscriber = new RequestSubscriber<MovieListResponse>(){
+
+        Log.i("Log", "loadData");
+        mSubscriber = new RequestSubscriber<List<MovieBrief>>() {
             @Override
             public void onStart() {
                 super.onStart();
@@ -41,10 +42,10 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
             }
 
             @Override
-            public void onNext(MovieListResponse movieListResponse) {
+            public void onNext(List<MovieBrief> movieListResponse) {
                 super.onNext(movieListResponse);
                 Log.i("Log", "onNext");
-                Log.i("Log", "movieListResponse = "+movieListResponse.toString());
+                Log.i("Log", "movieListResponse = " + movieListResponse.toString());
             }
 
             @Override
@@ -59,9 +60,12 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
                 Log.i("Log", "onError");
                 e.printStackTrace();
             }
-
         };
-//        observable.subscribe(mSubscriber);
+        if (dataType == 0){
+            builder.getMovieInTheaterList(city, mSubscriber);
+        }else {
+            builder.getMovieInComingList(city);
+        }
     }
 
     @Override
