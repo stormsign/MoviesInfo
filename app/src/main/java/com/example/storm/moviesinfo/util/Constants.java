@@ -5,5 +5,6 @@ package com.example.storm.moviesinfo.util;
  */
 
 public class Constants {
+    public static final String JUHE_URL = "http://op.juhe.cn/onebox/movie/";
     public static final String JUHE_KEY = "39cabbbfad378ad59b2bbd0c9cb17897";
 }

@@ -7,7 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.view.adapter.TabAdapter;
+import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
 
 import org.polaric.colorful.Colorful;
 
@@ -75,10 +76,13 @@ public class MainActivity extends BaseActivity {
         toggle.syncState();
 
         mTab.setBackgroundResource(Colorful.getThemeDelegate().getPrimaryColor().getColorRes());
-        FragmentManager fm = getSupportFragmentManager();
-
-        TabAdapter adapter = new TabAdapter(fm);
+        MovieListFragment fragment0 = MovieListFragment.newInstance(0);
+        MovieListFragment fragment1 = MovieListFragment.newInstance(1);
+        Fragment[] fragments = new Fragment[]{fragment0, fragment1};
+        TabAdapter adapter = new TabAdapter(getSupportFragmentManager(), fragments);
+        adapter.setPageTitle(new String[]{"正在上映", "即将上映"});
         mPager.setAdapter(adapter);
+        mTab.setupWithViewPager(mPager);
 
 
         //左侧抽屉导航栏

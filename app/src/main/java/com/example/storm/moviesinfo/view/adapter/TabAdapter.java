@@ -9,22 +9,35 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 
 public class TabAdapter extends FragmentPagerAdapter {
-    public TabAdapter(FragmentManager fm) {
+    private FragmentManager fm;
+    private Fragment[] fragments;
+    private String[] titles;
+
+    public TabAdapter(FragmentManager fm, Fragment[] fragments) {
         super(fm);
+        this.fm = fm;
+        this.fragments = fragments;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return null;
+        return fragments[position];
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return fragments.length;
+    }
+
+    public void setPageTitle(String[] titles){
+        this.titles = titles;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return super.getPageTitle(position);
+        if (titles!=null){
+            return titles[position];
+        }
+        return "";
     }
 }

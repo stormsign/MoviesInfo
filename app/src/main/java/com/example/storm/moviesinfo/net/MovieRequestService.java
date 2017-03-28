@@ -1,6 +1,7 @@
 package com.example.storm.moviesinfo.net;
 
 import com.example.storm.moviesinfo.model.movieinfo.MovieResponse;
+import com.example.storm.moviesinfo.model.movielist.MovieListResponse;
 
 import java.util.Map;
 
@@ -36,5 +37,7 @@ public interface MovieRequestService {
     @POST("video")
     Observable<MovieResponse> getMovieInfoPostRxJava(@FieldMap Map<String, Object> map);
 
-//    Observable
+    @FormUrlEncoded
+    @POST("pmovie")
+    Observable<MovieListResponse> getRecentMovieList(@FieldMap Map<String, Object> map);
 }
