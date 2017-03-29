@@ -1,10 +1,13 @@
 package com.example.storm.moviesinfo.model.movielist;
 
+import com.example.storm.moviesinfo.view.widget.MyRecyclerview.model.Visitor;
+import com.example.storm.moviesinfo.view.widget.MyRecyclerview.types.TypeFactory;
+
 /**
  * Created by khb on 2017/3/27.
  */
 
-public class MovieBrief {
+public class MovieBrief implements Visitor{
     String tvTitle;
     String iconaddress;
     String iconlinkUrl;
@@ -132,5 +135,10 @@ public class MovieBrief {
                 ", type=" + type +
                 ", story=" + story +
                 '}';
+    }
+
+    @Override
+    public int type(TypeFactory typeFactory) {
+        return typeFactory.type(this);
     }
 }

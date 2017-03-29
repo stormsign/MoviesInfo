@@ -8,7 +8,10 @@
     tools:showIn="@layout/activity_main"
     tools:context="com.example.storm.moviesinfo.view.fragment.MovieListFragment">
 
-    <com.example.storm.moviesinfo.view.widget.MyRecyclerview.MyRecyclerView
+    <include layout="@layout/item_moviebrief"
+        android:id="@+id/include"/>
+
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/movielist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

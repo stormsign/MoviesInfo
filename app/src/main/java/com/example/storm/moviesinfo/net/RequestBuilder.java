@@ -182,21 +182,18 @@ public class RequestBuilder {
                 .map(new Func1<MovieListResponse, MovieListWrapper>() {
                     @Override
                     public MovieListWrapper call(MovieListResponse movieListResponse) {
-                        Log.i("Log", " result="+movieListResponse.toString());
                         return movieListResponse.getResult();
                     }
                 })
                 .map(new Func1<MovieListWrapper, MovieList>() {
                     @Override
                     public MovieList call(MovieListWrapper movieListWrapper) {
-                        Log.i("Log", " result="+movieListWrapper.toString());
                         return movieListWrapper.getData().get(1);   //即将上映列表
                     }
                 })
                 .map(new Func1<MovieList, List<MovieBrief>>() {
                     @Override
                     public List<MovieBrief> call(MovieList movieList) {
-                        Log.i("Log", " result="+movieList.toString());
                         return movieList.getData();
                     }
                 });
