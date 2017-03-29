@@ -3,7 +3,6 @@ package com.example.storm.moviesinfo.presenter.impl;
 import android.util.Log;
 
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
-import com.example.storm.moviesinfo.model.movielist.MovieListResponse;
 import com.example.storm.moviesinfo.net.RequestBuilder;
 import com.example.storm.moviesinfo.net.RequestSubscriber;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
@@ -12,8 +11,6 @@ import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
 import java.util.List;
 
 import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by khb on 2017/3/28.
@@ -25,7 +22,7 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
     private RequestSubscriber mSubscriber;
 
     @Override
-    public void regist(MovieListFragment fragment) {
+    public void register(MovieListFragment fragment) {
         this.fragment = fragment;
         builder = new RequestBuilder();
     }
@@ -61,15 +58,18 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
                 e.printStackTrace();
             }
         };
+        Observable<List<MovieBrief>> observable;
         if (dataType == 0){
-            builder.getMovieInTheaterList(city, mSubscriber);
+            observable = builder.getMovieInTheaterList(city);
         }else {
-            builder.getMovieInComingList(city);
+            observable = builder.getMovieInComingList(city);
         }
+        observable.subscribe(mSubscriber);
+
     }
 
     @Override
-    public void unregist() {
+    public void unregister() {
         if (mSubscriber!=null && mSubscriber.isUnsubscribed()){
             mSubscriber.unsubscribe();
         }

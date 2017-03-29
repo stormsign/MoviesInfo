@@ -12,6 +12,11 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Colorful.defaults()
+                .primaryColor(Colorful.ThemeColor.BROWN)
+                .accentColor(Colorful.ThemeColor.DEEP_ORANGE)
+                .translucent(false)
+                .dark(false);
         Colorful.init(this);
     }
 }

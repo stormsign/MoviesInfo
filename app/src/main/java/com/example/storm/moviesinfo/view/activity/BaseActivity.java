@@ -3,7 +3,6 @@ package com.example.storm.moviesinfo.view.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import org.polaric.colorful.Colorful;
 import org.polaric.colorful.ColorfulActivity;
 
 /**
@@ -19,10 +18,10 @@ public class BaseActivity extends ColorfulActivity{
     }
 
     private void setDefaultTheme() {
-        Colorful.config(this)
-                .primaryColor(Colorful.ThemeColor.BROWN)
-                .accentColor(Colorful.ThemeColor.DEEP_ORANGE)
-                .translucent(true)
-                .dark(false).apply();
+//        Colorful.config(this)
+//                .primaryColor(Colorful.ThemeColor.BROWN)
+//                .accentColor(Colorful.ThemeColor.DEEP_ORANGE)
+//                .translucent(false)
+//                .dark(false).apply();
     }
 }

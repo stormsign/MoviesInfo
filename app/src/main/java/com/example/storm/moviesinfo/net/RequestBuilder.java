@@ -141,13 +141,12 @@ public class RequestBuilder {
     }
 
 //    正在上映电影列表
-    public Observable<MovieListResponse> getMovieInTheaterList(String city,
-                                                               RequestSubscriber<List<MovieBrief>> subscriber){
+    public Observable<List<MovieBrief>> getMovieInTheaterList(String city){
         Map<String, Object> map = new HashMap<>();
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
-        Observable<MovieListResponse> movieList = service.getRecentMovieList(map);
-        movieList.subscribeOn(Schedulers.io())
+        Observable<List<MovieBrief>> movieList = service.getRecentMovieList(map)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(new Func1<MovieListResponse, MovieListWrapper>() {
                     @Override
@@ -169,17 +168,16 @@ public class RequestBuilder {
 
                         return movieList.getData();
                     }
-                })
-                .subscribe(subscriber);
+                });
         return movieList;
     }
 //    即将上映电影列表
-    public Observable<MovieListResponse> getMovieInComingList(String city){
+    public Observable<List<MovieBrief>> getMovieInComingList(String city){
         Map<String, Object> map = new HashMap<>();
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
-        Observable<MovieListResponse> movieList = service.getRecentMovieList(map);
-        movieList.subscribeOn(Schedulers.io())
+        Observable<List<MovieBrief>> movieList = service.getRecentMovieList(map)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(new Func1<MovieListResponse, MovieListWrapper>() {
                     @Override

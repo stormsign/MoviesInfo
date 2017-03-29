@@ -35,7 +35,7 @@ public class MovieListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mPresenter = new MovieListPresenterImpl();
-        mPresenter.regist(this);
+        mPresenter.register(this);
         super.onCreate(savedInstanceState);
 
     }
@@ -60,6 +60,6 @@ public class MovieListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (mPresenter!=null)
-            mPresenter.unregist();
+            mPresenter.unregister();
     }
 }

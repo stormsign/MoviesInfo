@@ -7,8 +7,8 @@ import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
  */
 
 public interface IMovieListPresenter {
-    void regist(MovieListFragment fragment);
+    void register(MovieListFragment fragment);
     void loadData(String city, int dataType);
-    void unregist();
+    void unregister();
 
 }
