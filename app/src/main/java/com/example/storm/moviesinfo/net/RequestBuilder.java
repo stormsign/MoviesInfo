@@ -148,8 +148,31 @@ public class RequestBuilder {
         Observable<List<MovieBrief>> movieList = service.getRecentMovieList(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-
-                .map(new Func1<MovieListResponse, MovieListWrapper>() {
+                .map(new Func1<MovieListResponse, List<MovieBrief>>() {
+                    @Override
+                    public List<MovieBrief> call(MovieListResponse movieListResponse) {
+                        if (movieListResponse.getError_code() == 0) {   //调用成功
+                            MovieListWrapper result = movieListResponse.getResult();
+                            if (result != null) {   //数据有效
+                                MovieList movieList = result.getData().get(0);
+                                if (movieList!=null ){   //正在上映电影数据有效
+                                    if (movieList.getData()!=null && movieList.getData().size()>0){     //正在上映电影列表不为空
+                                        return movieList.getData();
+                                    }
+                                    throw new ResultException(ResultException.EMPTY,
+                                            "数据为空");
+                                }
+                                throw new ResultException(ResultException.INVALID_DATA,
+                                        "数据无效");
+                            }
+                            throw new ResultException(ResultException.INVALID_DATA,
+                                    "数据无效");
+                        }
+                        throw new ResultException(movieListResponse.getError_code(),
+                                movieListResponse.getReason());
+                    }
+                });
+                /*.map(new Func1<MovieListResponse, MovieListWrapper>() {
                     @Override
                     public MovieListWrapper call(MovieListResponse movieListResponse) {
 
@@ -169,7 +192,7 @@ public class RequestBuilder {
 
                         return movieList.getData();
                     }
-                });
+                });*/
         return movieList;
     }
 //    即将上映电影列表

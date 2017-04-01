@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
+import com.example.storm.moviesinfo.view.holder.MovieHolder;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.viewholder.BaseViewHolder;
 
 /**
@@ -38,6 +39,8 @@ public class TypeFactoryForRecyclerView implements TypeFactory {
     @Override
     public BaseViewHolder createViewHolder(int type, View itemView) {
         switch (type){
+            case MovieBrief:
+                return new MovieHolder(itemView);
 //            case TYPE_ONE:
 //                return new TypeOneHolder(itemView);
 //            case TYPE_TWO:

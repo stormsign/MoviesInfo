@@ -3,7 +3,7 @@ package com.example.storm.moviesinfo.view.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +13,8 @@ import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.presenter.impl.MovieListPresenterImpl;
 import com.example.storm.moviesinfo.view.iview.IMovieListFragment;
+import com.example.storm.moviesinfo.view.widget.MyRecyclerview.HeaderFooterWrapper;
+import com.example.storm.moviesinfo.view.widget.MyRecyclerview.MyRecyclerView;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.adapter.MultiTypeAdapter;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.model.Visitor;
 
@@ -34,7 +36,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     private String city = "深圳";
 
     @BindView(R.id.movielist)
-    RecyclerView mMovieList;
+    MyRecyclerView mMovieList;
     private List<Visitor> list;
 
     public static MovieListFragment newInstance(int fragmentType){
@@ -57,10 +59,13 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movielist, container, false);
-        ButterKnife.bind(view);
+        ButterKnife.bind(this, view);
         list = new ArrayList<>();
         MultiTypeAdapter adapter = new MultiTypeAdapter(list);
-//        mMovieList.setAdapter(adapter);
+        HeaderFooterWrapper wrapper = new HeaderFooterWrapper(adapter);
+        mMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
+        wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listfooter, mMovieList, false));
+        mMovieList.setAdapter(wrapper);
         return view;
     }
 

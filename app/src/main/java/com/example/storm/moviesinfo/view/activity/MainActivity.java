@@ -1,6 +1,7 @@
 package com.example.storm.moviesinfo.view.activity;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,7 +10,6 @@ import android.os.RemoteException;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -23,10 +23,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.service.ILocationService;
+import com.example.storm.moviesinfo.service.LocationService;
 import com.example.storm.moviesinfo.view.adapter.TabAdapter;
 import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
 
@@ -56,6 +58,8 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
     private double lat;
     private double lon;
     private String locationMsg;
+    private ILocationService locationService;
+    //    private LocationService.MyBinder binder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +78,13 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                try {
+                    Toast.makeText(MainActivity.this, locationService.notifyLocation(), Toast.LENGTH_LONG).show();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
 
@@ -113,56 +122,10 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
 
             }
         });
-//        Intent intent = new Intent(this, LocationService.class);
-//        bindService(intent, this, BIND_AUTO_CREATE);
+        Intent intent = new Intent(this, LocationService.class);
+        intent.setPackage("com.example.storm.moviesinfo.service");
+        bindService(intent, this, BIND_AUTO_CREATE);
 
-        /*LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        List<String> providers = lm.getProviders(true);
-        String locationProvider;
-        if (providers.contains(LocationManager.NETWORK_PROVIDER)){     //优先使用网络定位
-            locationProvider = LocationManager.NETWORK_PROVIDER;
-        }else if (providers.contains(LocationManager.GPS_PROVIDER)){
-            locationProvider = LocationManager.GPS_PROVIDER;
-        }else {
-            locationProvider = LocationManager.PASSIVE_PROVIDER;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED){
-                locationMsg = getResources().getString(R.string.location_no_permission);
-                Log.i("Log", locationMsg);
-                return ;
-            }
-        }
-        lm.requestLocationUpdates(locationProvider, 3000, 0, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                if (location!=null){
-                    lat = location.getLatitude();
-                    lon = location.getLongitude();
-                    Log.i("Log", "lat="+lat +" -- lon="+lon);
-                    locationMsg = "lat="+lat +" -- lon="+lon;
-                }else {
-                    locationMsg = getResources().getString(R.string.location_no_provider);
-                    Log.i("Log", locationMsg);
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        });*/
 
     }
 
@@ -192,9 +155,9 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.i("Log", "onServiceConnected");
-        ILocationService locationService = ILocationService.Stub.asInterface(service);
+        locationService = ILocationService.Stub.asInterface(service);
         try {
-            Log.i("Log", "notifyLocation "+locationService.notifyLocation());
+            Log.i("Log", "notifyLocation "+ locationService.notifyLocation());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

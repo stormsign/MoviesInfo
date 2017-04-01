@@ -28,7 +28,6 @@
 
 
         <service android:name=".service.LocationService"
-            android:exported="false"
             android:label="定位service"/>
     </application>
 
