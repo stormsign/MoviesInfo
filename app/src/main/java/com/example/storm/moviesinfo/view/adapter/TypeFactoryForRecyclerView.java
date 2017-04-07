@@ -1,10 +1,11 @@
-package com.example.storm.moviesinfo.view.widget.MyRecyclerview.types;
+package com.example.storm.moviesinfo.view.adapter;
 
 import android.view.View;
 
 import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.view.holder.MovieHolder;
+import com.example.storm.moviesinfo.view.widget.MyRecyclerview.types.TypeFactory;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.viewholder.BaseViewHolder;
 
 /**
@@ -33,7 +34,7 @@ public class TypeFactoryForRecyclerView implements TypeFactory {
 
     @Override
     public int type(MovieBrief movieBrief) {
-        return 0;
+        return MovieBrief;
     }
 
     @Override

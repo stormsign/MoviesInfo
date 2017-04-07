@@ -9,26 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/movieName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="16dp"
-            android:text="片名"
-            app:layout_constraintLeft_toRightOf="@+id/poster"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <TextView android:id="@+id/director"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="导演"
-            app:layout_constraintLeft_toRightOf="@+id/poster"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/premiereTime" />
-
         <ImageView
             android:id="@+id/poster"
             android:layout_width="96dp"
@@ -37,17 +17,44 @@
             android:layout_marginLeft="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/cast"
+            android:id="@+id/movieName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="主演"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/director"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="16dp"
+            android:text="片名"
+            android:textSize="@dimen/list_movieTitle"
             app:layout_constraintLeft_toRightOf="@+id/poster"
-            android:layout_marginLeft="15dp" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.example.storm.moviesinfo.view.widget.AutoColumnLinearLayout
+            android:id="@+id/tags"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_marginTop="9dp"
+            app:layout_constraintTop_toBottomOf="@+id/movieName"
+            app:layout_constraintLeft_toRightOf="@+id/poster"
+            android:layout_marginLeft="15dp">
+
+        </com.example.storm.moviesinfo.view.widget.AutoColumnLinearLayout>
+
+        <com.iarcuschin.simpleratingbar.SimpleRatingBar
+            android:id="@+id/stars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            app:srb_starBorderWidth="1"
+            app:layout_constraintLeft_toRightOf="@+id/poster"
+            app:srb_borderColor="@color/colorAccent"
+            app:srb_starCornerRadius="1"
+            app:srb_starSize="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/tags" />
 
         <TextView
             android:id="@+id/premiereTime"
@@ -55,10 +62,40 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="上映日期"
+            android:textSize="@dimen/list_movieInfo"
             app:layout_constraintLeft_toRightOf="@+id/poster"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="60dp" />
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/stars" />
 
+        <TextView android:id="@+id/director"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="导演"
+            android:textSize="@dimen/list_movieInfo"
+            app:layout_constraintLeft_toRightOf="@+id/poster"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="7dp"
+            app:layout_constraintTop_toBottomOf="@+id/premiereTime" />
+
+        <TextView
+            android:id="@+id/cast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="主演"
+            android:textSize="@dimen/list_movieInfo"
+            android:layout_marginTop="7dp"
+            app:layout_constraintTop_toBottomOf="@+id/director"
+            app:layout_constraintLeft_toRightOf="@+id/poster"
+            android:layout_marginLeft="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintVertical_bias="0.0" />
     </android.support.constraint.ConstraintLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="@dimen/listdivider_width"
+        android:background="@color/md_blue_grey_100"
+        android:layout_marginLeft="@dimen/listdivider_margin"
+        android:layout_marginRight="@dimen/listdivider_margin"/>
 
 </LinearLayout>

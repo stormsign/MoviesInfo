@@ -12,10 +12,10 @@ import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.presenter.impl.MovieListPresenterImpl;
+import com.example.storm.moviesinfo.view.adapter.MovieListAdapter;
 import com.example.storm.moviesinfo.view.iview.IMovieListFragment;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.HeaderFooterWrapper;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.MyRecyclerView;
-import com.example.storm.moviesinfo.view.widget.MyRecyclerview.adapter.MultiTypeAdapter;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.model.Visitor;
 
 import java.util.ArrayList;
@@ -38,6 +38,8 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     @BindView(R.id.movielist)
     MyRecyclerView mMovieList;
     private List<Visitor> list;
+    private MovieListAdapter adapter;
+    private HeaderFooterWrapper wrapper;
 
     public static MovieListFragment newInstance(int fragmentType){
         MovieListFragment fragment = new MovieListFragment();
@@ -61,11 +63,13 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         View view = inflater.inflate(R.layout.fragment_movielist, container, false);
         ButterKnife.bind(this, view);
         list = new ArrayList<>();
-        MultiTypeAdapter adapter = new MultiTypeAdapter(list);
-        HeaderFooterWrapper wrapper = new HeaderFooterWrapper(adapter);
+
         mMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new MovieListAdapter(list);
+        wrapper = new HeaderFooterWrapper(adapter);
         wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listfooter, mMovieList, false));
         mMovieList.setAdapter(wrapper);
+
         return view;
     }
 
@@ -86,7 +90,9 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
     @Override
     public void onLoadData(List<MovieBrief> movieList) {
-
+        list.clear();
+        list.addAll(movieList);
+        wrapper.notifyDataSetChanged();
     }
 
     @Override

@@ -43,6 +43,7 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
                 super.onNext(movieListResponse);
                 Log.i("Log", "onNext");
                 Log.i("Log", "movieListResponse = " + movieListResponse.toString());
+                fragment.onLoadData(movieListResponse);
             }
 
             @Override
