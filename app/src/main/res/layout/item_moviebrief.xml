@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
         <ImageView
             android:id="@+id/poster"
             android:layout_width="96dp"
-            android:layout_height="120dp"
+            android:layout_height="136dp"
             app:srcCompat="?android:attr/textSelectHandle"
             android:layout_marginLeft="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -39,9 +39,7 @@
             android:layout_marginTop="9dp"
             app:layout_constraintTop_toBottomOf="@+id/movieName"
             app:layout_constraintLeft_toRightOf="@+id/poster"
-            android:layout_marginLeft="15dp">
-
-        </com.example.storm.moviesinfo.view.widget.AutoColumnLinearLayout>
+            android:layout_marginLeft="15dp"/>
 
         <com.iarcuschin.simpleratingbar.SimpleRatingBar
             android:id="@+id/stars"
@@ -50,7 +48,6 @@
             android:layout_marginLeft="15dp"
             app:srb_starBorderWidth="1"
             app:layout_constraintLeft_toRightOf="@+id/poster"
-            app:srb_borderColor="@color/colorAccent"
             app:srb_starCornerRadius="1"
             app:srb_starSize="16dp"
             android:layout_marginTop="8dp"
@@ -84,6 +81,8 @@
             android:text="主演"
             android:textSize="@dimen/list_movieInfo"
             android:layout_marginTop="7dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             app:layout_constraintTop_toBottomOf="@+id/director"
             app:layout_constraintLeft_toRightOf="@+id/poster"
             android:layout_marginLeft="15dp"

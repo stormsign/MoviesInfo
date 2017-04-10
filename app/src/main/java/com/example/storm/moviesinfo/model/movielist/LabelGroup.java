@@ -104,4 +104,21 @@ public class LabelGroup {
                 ", linkm4=" + linkm4 +
                 '}';
     }
+
+    public String getGroupString(){
+        StringBuilder builder = new StringBuilder();
+        if (link1 != null){
+            builder.append(link1.getName()).append(" ");
+        }
+        if (link2 != null){
+            builder.append(link2.getName()).append(" ");
+        }
+        if (link3 != null){
+            builder.append(link3.getName()).append(" ");
+        }
+        if (link4 != null){
+            builder.append(link4.getName()).append(" ");
+        }
+        return  builder.toString();
+    }
 }

@@ -93,6 +93,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         list.clear();
         list.addAll(movieList);
         wrapper.notifyDataSetChanged();
+//        adapter.notifyDataSetChanged();
     }
 
     @Override

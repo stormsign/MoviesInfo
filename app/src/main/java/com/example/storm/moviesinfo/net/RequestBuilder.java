@@ -172,27 +172,6 @@ public class RequestBuilder {
                                 movieListResponse.getReason());
                     }
                 });
-                /*.map(new Func1<MovieListResponse, MovieListWrapper>() {
-                    @Override
-                    public MovieListWrapper call(MovieListResponse movieListResponse) {
-
-                        return movieListResponse.getResult();
-                    }
-                })
-                .map(new Func1<MovieListWrapper, MovieList>() {
-                    @Override
-                    public MovieList call(MovieListWrapper movieListWrapper) {
-
-                        return movieListWrapper.getData().get(0);   //正在上映列表
-                    }
-                })
-                .map(new Func1<MovieList, List<MovieBrief>>() {
-                    @Override
-                    public List<MovieBrief> call(MovieList movieList) {
-
-                        return movieList.getData();
-                    }
-                });*/
         return movieList;
     }
 //    即将上映电影列表

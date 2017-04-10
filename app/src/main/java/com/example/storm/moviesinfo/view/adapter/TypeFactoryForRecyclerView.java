@@ -13,7 +13,7 @@ import com.example.storm.moviesinfo.view.widget.MyRecyclerview.viewholder.BaseVi
  */
 public class TypeFactoryForRecyclerView implements TypeFactory {
 
-    private final int MovieBrief = R.layout.item_moviebrief;
+    private final int MPVIEBRIEF = R.layout.item_moviebrief;
 //    private final int TYPE_TWO = R.layout.item_type_two;
 //    private final int TYPE_THREE = R.layout.item_type_three;
 
@@ -34,13 +34,13 @@ public class TypeFactoryForRecyclerView implements TypeFactory {
 
     @Override
     public int type(MovieBrief movieBrief) {
-        return MovieBrief;
+        return MPVIEBRIEF;
     }
 
     @Override
     public BaseViewHolder createViewHolder(int type, View itemView) {
         switch (type){
-            case MovieBrief:
+            case MPVIEBRIEF:
                 return new MovieHolder(itemView);
 //            case TYPE_ONE:
 //                return new TypeOneHolder(itemView);
