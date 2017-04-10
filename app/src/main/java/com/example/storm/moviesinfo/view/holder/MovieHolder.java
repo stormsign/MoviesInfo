@@ -33,7 +33,8 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
                 .error(R.drawable.svg_ic_attention)
                 .into((ImageView) getView(R.id.poster));
         ((TextView)getView(R.id.movieName)).setText(movie.getTvTitle());
-        if (movie.getGrade()!=null) {
+
+        if (movie.getGrade()!=null) {   //设置评分
             SimpleRatingBar ratingBar = (SimpleRatingBar) getView(R.id.stars);
             ratingBar.setVisibility(View.VISIBLE);
             ratingBar.setBorderColor(itemView.getContext().getResources()
@@ -44,9 +45,25 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
         }else {
             getView(R.id.stars).setVisibility(View.GONE);
         }
-        ((AutoColumnLinearLayout)getView(R.id.tags)).setTotalSpanCount(3);
+        AutoColumnLinearLayout tags = ((AutoColumnLinearLayout)getView(R.id.tags));
+        tags.setTotalSpanCount(2);
+        String tagsStr = movie.getType().getData().getGroupString();
+        StringBuilder builder = new StringBuilder(tagsStr);
+        String[] tagsArray = tagsStr.split(" ");
+        for (int i = 0; i < tagsArray.length; i ++){
+            tags.addView(createTagView(tagsArray[i]));
+        }
+
         ((TextView)getView(R.id.premiereTime)).setText(movie.getPlayDate().getShowname()+"："+movie.getPlayDate().getData());
         ((TextView)getView(R.id.director)).setText(movie.getDirector().getShowname() + "："+movie.getDirector().getData().getGroupString());
         ((TextView)getView(R.id.cast)).setText(movie.getStar().getShowname()+"："+movie.getStar().getData().getGroupString());
+    }
+
+    private View createTagView(String str){
+        TextView tag = new TextView(itemView.getContext());
+        tag.setText(str);
+        tag.setBackgroundResource(R.drawable.bg_movietag);
+        tag.setPadding(5, 3, 5, 3);
+        return tag;
     }
 }
