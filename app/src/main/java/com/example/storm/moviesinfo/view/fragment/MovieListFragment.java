@@ -69,6 +69,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         wrapper = new HeaderFooterWrapper(adapter);
         wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listfooter, mMovieList, false));
         mMovieList.setAdapter(wrapper);
+//        mMovieList.addItemDecoration();
 
         return view;
     }
@@ -93,7 +94,6 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         list.clear();
         list.addAll(movieList);
         wrapper.notifyDataSetChanged();
-//        adapter.notifyDataSetChanged();
     }
 
     @Override

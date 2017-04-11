@@ -1,5 +1,9 @@
 package com.example.storm.moviesinfo.view.holder;
 
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,8 +52,8 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
         AutoColumnLinearLayout tags = ((AutoColumnLinearLayout)getView(R.id.tags));
         tags.setTotalSpanCount(2);
         String tagsStr = movie.getType().getData().getGroupString();
-        StringBuilder builder = new StringBuilder(tagsStr);
         String[] tagsArray = tagsStr.split(" ");
+
         for (int i = 0; i < tagsArray.length; i ++){
             tags.addView(createTagView(tagsArray[i]));
         }
@@ -62,8 +66,21 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
     private View createTagView(String str){
         TextView tag = new TextView(itemView.getContext());
         tag.setText(str);
-        tag.setBackgroundResource(R.drawable.bg_movietag);
-        tag.setPadding(5, 3, 5, 3);
+        tag.setTextSize(11);
+//        tag.setBackgroundResource(R.drawable.bg_movietag);
+        tag.setPadding(12, 6, 12, 6);
+        ShapeDrawable shapeDrawable = new ShapeDrawable();
+        Paint paint = shapeDrawable.getPaint();
+        paint.setColor(itemView.getContext().getResources()
+                .getColor(Colorful.getThemeDelegate().getAccentColor().getColorRes()));
+        paint.setStrokeWidth(2);
+        paint.setStyle(Paint.Style.STROKE);
+        RoundRectShape rrs = new RoundRectShape(
+                new float[]{8,8,8,8,8,8,8,8},
+                new RectF(),
+                new float[]{0, 0, 0, 0, 0, 0, 0, 0});
+        shapeDrawable.setShape(rrs);
+        tag.setBackgroundDrawable(shapeDrawable);
         return tag;
     }
 }
