@@ -7,11 +7,11 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.storm.moviesinfo.R;
 
@@ -41,8 +41,9 @@ public class MyRecyclerView extends RecyclerView {
     boolean footerEnable;
     boolean headerEnable;
 
-    public boolean scrolldown = false;
+    public boolean refreshable = false;
     private MyScrollListener myScrollListener;
+    private ListRefreshableListener listner;
 
     public MyRecyclerView(Context context) {
         super(context);
@@ -54,6 +55,15 @@ public class MyRecyclerView extends RecyclerView {
 
     public MyRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    public interface ListRefreshableListener{
+        void onListRefreshable(View header);
+        void onListRefreshing(View header);
+    }
+
+    public void setRefreshListListener(ListRefreshableListener listener){
+        listner = listener;
     }
 
     @Override
@@ -89,12 +99,22 @@ public class MyRecyclerView extends RecyclerView {
                 dy = endY - startY;
 
                 if (dy > 0) {
-                    if (header_status == HEADER_HIDE && dy >= BUFFER_HEIGHT && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {
+                    if (header_status == HEADER_HIDE
+                            && dy > BUFFER_HEIGHT
+                            && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {    //超过缓冲距离后开始下拉
                         headerHeight = dy - BUFFER_HEIGHT;
                         if (header != null) {
                             ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
                             layoutParams.height = (int) headerHeight;
                             header.setLayoutParams(layoutParams);
+                        }
+                        if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){        //超过回复距离，再拉之后松手就加载
+                            if (!refreshable){
+                                if (listner != null){
+                                    listner.onListRefreshable(header);
+                                    refreshable = true;
+                                }
+                            }
                         }
                     } else if (header_status == HEADER_SHOW) {
                         if (dy + headerHeight <= MAX_HEADERHEIGHT) {
@@ -114,6 +134,10 @@ public class MyRecyclerView extends RecyclerView {
                     if (dy >= BUFFER_HEIGHT){
                         if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){
                             header_status = HEADER_SHOW;
+                            Log.i("Log", "pullback");
+                            if (listner!=null){
+                                listner.onListRefreshing(header);
+                            }
                         }
                     }
                 }else if (header_status == HEADER_SHOW){
@@ -209,7 +233,6 @@ public class MyRecyclerView extends RecyclerView {
                     && firstVisibleItem == wrapper.getHeadersCount()
                     && !headerEnable
                     ) {
-                Toast.makeText(getContext(), "到顶了", Toast.LENGTH_SHORT).show();
                 headerEnable = true;
             }
             if (newState == RecyclerView.SCROLL_STATE_IDLE
@@ -217,7 +240,6 @@ public class MyRecyclerView extends RecyclerView {
                     && firstVisibleItem != 0
                     && !footerEnable
                     && !hasFooter) {
-                Toast.makeText(getContext(), "到底了", Toast.LENGTH_SHORT).show();
                 footerEnable = true;
             }
             if (newState == RecyclerView.SCROLL_STATE_DRAGGING

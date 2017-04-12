@@ -1,7 +1,6 @@
 package com.example.storm.moviesinfo.view.holder;
 
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.view.View;
@@ -63,22 +62,25 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
         ((TextView)getView(R.id.cast)).setText(movie.getStar().getShowname()+"："+movie.getStar().getData().getGroupString());
     }
 
+    //设置影片标签
     private View createTagView(String str){
         TextView tag = new TextView(itemView.getContext());
         tag.setText(str);
         tag.setTextSize(11);
-//        tag.setBackgroundResource(R.drawable.bg_movietag);
         tag.setPadding(12, 6, 12, 6);
+        //代码设置边框
         ShapeDrawable shapeDrawable = new ShapeDrawable();
         Paint paint = shapeDrawable.getPaint();
         paint.setColor(itemView.getContext().getResources()
                 .getColor(Colorful.getThemeDelegate().getAccentColor().getColorRes()));
-        paint.setStrokeWidth(2);
+        paint.setStrokeWidth(6);
         paint.setStyle(Paint.Style.STROKE);
+        float outerR = 10;
+        float innerR = 0;
         RoundRectShape rrs = new RoundRectShape(
-                new float[]{8,8,8,8,8,8,8,8},
-                new RectF(),
-                new float[]{0, 0, 0, 0, 0, 0, 0, 0});
+                new float[]{outerR, 0, outerR, 0, outerR, 0, outerR, 0},
+                null,
+                new float[]{innerR, innerR, innerR, innerR, innerR, innerR, innerR, innerR});
         shapeDrawable.setShape(rrs);
         tag.setBackgroundDrawable(shapeDrawable);
         return tag;

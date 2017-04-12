@@ -3,8 +3,8 @@
     <dimen name="main_drawer_header_height">160dp</dimen>
     <dimen name="main_tab_height">40dp</dimen>
     <dimen name="_main_nav_width">240dp</dimen>
-    <dimen name="list_movieTitle">15sp</dimen>
-    <dimen name="list_movieInfo">12sp</dimen>
+    <dimen name="list_movieTitle">16sp</dimen>
+    <dimen name="list_movieInfo">13sp</dimen>
     <dimen name="listdivider_width">1dp</dimen>
     <dimen name="listdivider_margin">10dp</dimen>
 </resources>
