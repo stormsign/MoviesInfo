@@ -55,7 +55,8 @@
             android:layout_marginTop="0dp"
             android:layout_marginLeft="15dp"
             app:layout_constraintLeft_toRightOf="@+id/poster"
-            app:layout_constraintTop_toBottomOf="@+id/tags" />
+            app:layout_constraintTop_toBottomOf="@+id/tags"
+            app:srb_isIndicator="false"/>
 
         <TextView
             android:id="@+id/premiereTime"

@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 
 import com.example.storm.moviesinfo.R;
 
@@ -108,15 +111,13 @@ public class MyRecyclerView extends RecyclerView {
                             layoutParams.height = (int) headerHeight;
                             header.setLayoutParams(layoutParams);
                         }
-                        if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){        //超过回复距离，再拉之后松手就加载
+                        if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){        //超过回复距离，图标变换，再拉之后松手就加载
                             if (!refreshable){
-                                if (listner != null){
-                                    listner.onListRefreshable(header);
-                                    refreshable = true;
-                                }
+                                refreshable = true;
+                                setHeaderShow();
                             }
                         }
-                    } else if (header_status == HEADER_SHOW) {
+                    } else if (header_status == HEADER_SHOW) {      //下拉时header已经处于显示状态
                         if (dy + headerHeight <= MAX_HEADERHEIGHT) {
                             if (header != null) {
                                 ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
@@ -135,9 +136,7 @@ public class MyRecyclerView extends RecyclerView {
                         if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){
                             header_status = HEADER_SHOW;
                             Log.i("Log", "pullback");
-                            if (listner!=null){
-                                listner.onListRefreshing(header);
-                            }
+                            setHeaderLoading();
                         }
                     }
                 }else if (header_status == HEADER_SHOW){
@@ -193,6 +192,43 @@ public class MyRecyclerView extends RecyclerView {
             as.play(heightA);
             as.start();
         }
+    }
+
+    private void setHeaderDefault(){
+        ImageView bar = ((ImageView)header.findViewById(R.id.refreshing));
+        bar.setImageResource(R.mipmap.img_pointdown);
+        bar.clearAnimation();
+        RotateAnimation animation = new RotateAnimation(180, 0,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(500);
+        animation.setFillAfter(true);
+        bar.startAnimation(animation);
+    }
+
+    private void setHeaderShow(){
+        ImageView bar = ((ImageView)header.findViewById(R.id.refreshing));
+        bar.setImageResource(R.mipmap.img_pointdown);
+        RotateAnimation animation = new RotateAnimation(0, 180,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(500);
+        animation.setFillAfter(true);
+        bar.startAnimation(animation);
+
+    }
+
+    private void setHeaderLoading(){
+            ImageView bar = ((ImageView)header.findViewById(R.id.refreshing));
+            bar.setImageResource(R.mipmap.img_refresh);
+//            drag.clearAnimation();
+            RotateAnimation rotate = new RotateAnimation(0, 360,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            rotate.setDuration(1000);
+            rotate.setRepeatCount(Animation.INFINITE);
+            bar.setVisibility(View.VISIBLE);
+            bar.startAnimation(rotate);
     }
 
     class ViewWrapper {

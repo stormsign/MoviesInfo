@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 /**
  * Created by khb on 2017/2/13.
  */
-public class ViewHolder extends RecyclerView.ViewHolder {
+public class ViewHolder extends RecyclerView.ViewHolder implements RecyclerView.OnChildAttachStateChangeListener{
 
     private Context mContext;
     private View mConvertView;
@@ -50,4 +50,14 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         return mConvertView;
     }
 
+
+    @Override
+    public void onChildViewAttachedToWindow(View view) {
+
+    }
+
+    @Override
+    public void onChildViewDetachedFromWindow(View view) {
+
+    }
 }

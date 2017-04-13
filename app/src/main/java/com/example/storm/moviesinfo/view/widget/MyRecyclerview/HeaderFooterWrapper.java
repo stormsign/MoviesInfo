@@ -2,6 +2,7 @@ package com.example.storm.moviesinfo.view.widget.MyRecyclerview;
 
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -112,4 +113,14 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
     public int getItemCount() {
         return getHeadersCount() + getFootersCount() + getRealItemCount();
     }
+
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+        Log.i("Log", "detached");
+
+        super.onViewDetachedFromWindow(holder);
+    }
+
+
+
 }
