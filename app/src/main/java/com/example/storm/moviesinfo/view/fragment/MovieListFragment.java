@@ -74,24 +74,10 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         mMovieList.setRefreshListListener(new MyRecyclerView.ListRefreshableListener() {
             @Override
             public void onListRefreshable(View header) {
-//                ImageView drag = (ImageView) header.findViewById(R.id.drag);
-//                header.findViewById(R.id.refreshing).setVisibility(View.GONE);
-//                drag.setVisibility(View.VISIBLE);
-//                RotateAnimation animation = new RotateAnimation(0, 180,
-//                        RotateAnimation.RELATIVE_TO_SELF, 0.5f,
-//                        RotateAnimation.RELATIVE_TO_SELF, 0.5f);
-//                animation.setDuration(500);
-//                animation.setFillAfter(true);
-//                drag.startAnimation(animation);
             }
 
             @Override
             public void onListRefreshing(View header) {
-//                ImageView drag = (ImageView) header.findViewById(R.id.drag);
-//                ImageView bar = ((ImageView)header.findViewById(R.id.refreshing));
-//                bar .setVisibility(View.VISIBLE);
-//                drag.setRotation(180);
-//                drag.setVisibility(View.GONE);
             }
         });
         return view;

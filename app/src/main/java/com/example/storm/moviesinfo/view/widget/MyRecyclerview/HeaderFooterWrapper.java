@@ -1,11 +1,17 @@
 package com.example.storm.moviesinfo.view.widget.MyRecyclerview;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 
+import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.viewholder.ViewHolder;
 
 /**
@@ -19,6 +25,11 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
 
     private SparseArrayCompat<View> mHeaderViews = new SparseArrayCompat<>();
     private SparseArrayCompat<View> mFooterViews = new SparseArrayCompat<>();
+
+    public static final int HEADER_HIDE = 0;
+    public static final int HEADER_SHOW = 1;
+
+    private int header_status;
 
     public HeaderFooterWrapper(RecyclerView.Adapter adapter){
         mInnerAdapter = adapter;
@@ -34,14 +45,6 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
 
     public int getRealItemCount() {
         return mInnerAdapter.getItemCount();
-    }
-
-    public int getFootersCount() {
-        return mFooterViews.size();
-    }
-
-    public int getHeadersCount() {
-        return mHeaderViews.size();
     }
 
     public void addHeaderView(View view){
@@ -114,6 +117,22 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
         return getHeadersCount() + getFootersCount() + getRealItemCount();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        Log.i("Log", "attached");
+        if (getHeaderView().isAttachedToWindow()){
+            if (header_status == HEADER_HIDE){
+                setHeaderDefault();
+            }else {
+                setHeaderLoading();
+            }
+        }
+
+
+        super.onViewAttachedToWindow(holder);
+    }
+
     @Override
     public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
         Log.i("Log", "detached");
@@ -121,6 +140,69 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
         super.onViewDetachedFromWindow(holder);
     }
 
+    public int getHeaderStatus(){
+        return header_status;
+    }
 
+    public void setHeaderStatus(int status){
+        header_status = status;
+    }
+
+    public void setHeaderDefault(){
+        ImageView bar = ((ImageView)getHeaderView().findViewById(R.id.refreshing));
+        bar.setImageResource(R.mipmap.img_pointdown);
+//        bar.clearAnimation();
+//        RotateAnimation animation = new RotateAnimation(180, 0,
+//                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+//                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+//        animation.setDuration(500);
+//        animation.setFillAfter(true);
+//        bar.startAnimation(animation);
+    }
+
+    public void setHeaderShow(){
+        ImageView bar = ((ImageView)getHeaderView().findViewById(R.id.refreshing));
+        bar.setImageResource(R.mipmap.img_pointdown);
+        RotateAnimation animation = new RotateAnimation(0, 180,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(200);
+        animation.setFillAfter(true);
+        bar.startAnimation(animation);
+
+    }
+
+    public void setHeaderHide(){
+        ImageView bar = ((ImageView)getHeaderView().findViewById(R.id.refreshing));
+        bar.setImageResource(R.mipmap.img_pointdown);
+        RotateAnimation animation = new RotateAnimation(180, 0,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(200);
+        animation.setFillAfter(true);
+        bar.startAnimation(animation);
+
+    }
+
+    public void setHeaderLoading(){
+        ImageView bar = ((ImageView)getHeaderView().findViewById(R.id.refreshing));
+        bar.setImageResource(R.mipmap.img_refresh);
+//            drag.clearAnimation();
+        RotateAnimation rotate = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate.setDuration(1000);
+        rotate.setRepeatCount(Animation.INFINITE);
+        bar.setVisibility(View.VISIBLE);
+        bar.startAnimation(rotate);
+    }
+
+    public int getFootersCount() {
+        return mFooterViews.size();
+    }
+
+    public int getHeadersCount() {
+        return mHeaderViews.size();
+    }
 
 }
