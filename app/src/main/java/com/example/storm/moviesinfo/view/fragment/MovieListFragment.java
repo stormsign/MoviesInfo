@@ -60,7 +60,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         ButterKnife.bind(view);
         list = new ArrayList<>();
         MultiTypeAdapter adapter = new MultiTypeAdapter(list);
-        mMovieList.setAdapter(adapter);
+//        mMovieList.setAdapter(adapter);
         return view;
     }
 

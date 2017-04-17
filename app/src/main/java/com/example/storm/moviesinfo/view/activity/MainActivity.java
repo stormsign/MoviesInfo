@@ -1,7 +1,11 @@
 package com.example.storm.moviesinfo.view.activity;
 
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -13,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +26,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.storm.moviesinfo.R;
+import com.example.storm.moviesinfo.service.ILocationService;
 import com.example.storm.moviesinfo.view.adapter.TabAdapter;
 import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
 
@@ -29,7 +35,7 @@ import org.polaric.colorful.Colorful;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ServiceConnection {
 
     @BindView(R.id.main_drawer)
     DrawerLayout mDrawer;
@@ -46,6 +52,10 @@ public class MainActivity extends BaseActivity {
 
     private boolean isAppBarCollapsed;
     private SwitchCompat mSwitch;
+
+    private double lat;
+    private double lon;
+    private String locationMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,28 +113,96 @@ public class MainActivity extends BaseActivity {
 
             }
         });
+//        Intent intent = new Intent(this, LocationService.class);
+//        bindService(intent, this, BIND_AUTO_CREATE);
+
+        /*LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        List<String> providers = lm.getProviders(true);
+        String locationProvider;
+        if (providers.contains(LocationManager.NETWORK_PROVIDER)){     //优先使用网络定位
+            locationProvider = LocationManager.NETWORK_PROVIDER;
+        }else if (providers.contains(LocationManager.GPS_PROVIDER)){
+            locationProvider = LocationManager.GPS_PROVIDER;
+        }else {
+            locationProvider = LocationManager.PASSIVE_PROVIDER;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED){
+                locationMsg = getResources().getString(R.string.location_no_permission);
+                Log.i("Log", locationMsg);
+                return ;
+            }
+        }
+        lm.requestLocationUpdates(locationProvider, 3000, 0, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if (location!=null){
+                    lat = location.getLatitude();
+                    lon = location.getLongitude();
+                    Log.i("Log", "lat="+lat +" -- lon="+lon);
+                    locationMsg = "lat="+lat +" -- lon="+lon;
+                }else {
+                    locationMsg = getResources().getString(R.string.location_no_provider);
+                    Log.i("Log", locationMsg);
+                }
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        });*/
 
     }
 
     @Override
+    protected void onDestroy() {
+        unbindService(this);
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.i("Log", "onServiceConnected");
+        ILocationService locationService = ILocationService.Stub.asInterface(service);
+        try {
+            Log.i("Log", "notifyLocation "+locationService.notifyLocation());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        Log.i("Log", "onServiceDisconnected");
     }
 }

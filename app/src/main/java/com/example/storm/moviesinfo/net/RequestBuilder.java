@@ -148,6 +148,7 @@ public class RequestBuilder {
         Observable<List<MovieBrief>> movieList = service.getRecentMovieList(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+
                 .map(new Func1<MovieListResponse, MovieListWrapper>() {
                     @Override
                     public MovieListWrapper call(MovieListResponse movieListResponse) {

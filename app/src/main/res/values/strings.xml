@@ -8,4 +8,6 @@
     <string name="menu_share">分享</string>
     <string name="openDrawerContentDesc">open main page drawer</string>
     <string name="closeDrawerContentDesc">close main page drawer</string>
+    <string name="location_no_permission">应用没有被授予位置权限</string>
+    <string name="location_no_provider">无法获取位置信息</string>
 </resources>
