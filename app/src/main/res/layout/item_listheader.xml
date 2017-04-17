@@ -6,19 +6,13 @@
     android:gravity="center"
     android:layout_gravity="center">
 
-    <ImageView android:id="@+id/loading"
+    <ImageView android:id="@+id/refreshing"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:src="@mipmap/img_refresh"
+        android:src="@mipmap/img_pointdown"
         android:tint="@color/md_grey_500"
         />
-    
-    <!--<android.support.v4.widget.ContentLoadingProgressBar-->
-        <!--android:layout_width="40dp"-->
-        <!--android:layout_height="40dp"-->
-        <!--style="?android:attr/progressBarStyleLarge"-->
-        <!--android:layout_margin="10dp"/>-->
 
 </LinearLayout>

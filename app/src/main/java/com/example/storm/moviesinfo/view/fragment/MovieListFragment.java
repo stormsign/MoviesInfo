@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
@@ -38,6 +39,9 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
     @BindView(R.id.movielist)
     MyRecyclerView mMovieList;
+    @BindView(R.id.contentview)
+    LinearLayout contentView;
+
     private List<Visitor> list;
     private MovieListAdapter adapter;
     private HeaderFooterWrapper wrapper;
@@ -59,8 +63,8 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movielist, container, false);
         ButterKnife.bind(this, view);
         list = new ArrayList<>();
@@ -68,16 +72,45 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         mMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new MovieListAdapter(list);
         wrapper = new HeaderFooterWrapper(adapter);
-        wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listfooter, mMovieList, false));
+        wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listheader, mMovieList, false));
         mMovieList.setAdapter(wrapper);
         mMovieList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mMovieList.setRefreshListListener(new MyRecyclerView.ListRefreshableListener() {
             @Override
-            public void onListRefreshable(View header) {
+            public void onListRefreshing() {
+                mPresenter.loadData(city, dataType);
             }
 
             @Override
-            public void onListRefreshing(View header) {
+            public void onListLoadMore() {
+//                mPresenter.loadData(city, dataType);
+//                final View footerview = View.inflate(getContext(), R.layout.item_listfooter, null);
+//                contentView.addView(footerview);
+//                ImageView loading = (ImageView) footerview.findViewById(R.id.loading);
+//                RotateAnimation rotate = new RotateAnimation(0, 360,
+//                        Animation.RELATIVE_TO_SELF, 0.5f,
+//                        Animation.RELATIVE_TO_SELF, 0.5f);
+//                rotate.setDuration(1000);
+//                rotate.setRepeatCount(Animation.INFINITE);
+//                loading.startAnimation(rotate);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(2000);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (mMovieList.hasFooter){
+                                        mMovieList.removeFooter();
+                                    }
+                                }
+                            });
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
         });
         return view;
@@ -103,6 +136,12 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         list.clear();
         list.addAll(movieList);
         wrapper.notifyDataSetChanged();
+        if (mMovieList.hasHeader){
+            mMovieList.removeHeader();
+        }
+//        if (mMovieList.hasFooter){
+//            mMovieList.removeFooter();
+//        }
     }
 
     @Override

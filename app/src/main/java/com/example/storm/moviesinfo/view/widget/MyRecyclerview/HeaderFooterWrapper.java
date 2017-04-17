@@ -53,6 +53,7 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
 
     public void addFooterView(View view){
         mFooterViews.put(mFooterViews.size() + BASE_ITEM_TYPE_FOOTER, view);
+        setFooterLoading();
     }
 
     public View getHeaderView(){
@@ -69,6 +70,7 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public void removeFooter(){
+        getFooterView().findViewById(R.id.loading).clearAnimation();
         mFooterViews.remove(mFooterViews.size() - 1 + BASE_ITEM_TYPE_FOOTER);
         notifyItemChanged(getItemCount());
     }
@@ -121,14 +123,18 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         Log.i("Log", "attached");
-        if (getHeaderView().isAttachedToWindow()){
+        if (getHeaderView()!=null
+                && getHeaderView().isAttachedToWindow()){
             if (header_status == HEADER_HIDE){
                 setHeaderDefault();
             }else {
                 setHeaderLoading();
             }
         }
-
+//        if (getFooterView() != null
+//                && getFooterView().isAttachedToWindow()){
+//            setFooterLoading();
+//        }
 
         super.onViewAttachedToWindow(holder);
     }
@@ -195,6 +201,19 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
         rotate.setRepeatCount(Animation.INFINITE);
         bar.setVisibility(View.VISIBLE);
         bar.startAnimation(rotate);
+    }
+
+    public void setFooterLoading(){
+        Log.i("Log", " Footer  " + (getFooterView()!= null));
+        if (getFooterView()!= null){
+            ImageView loading = (ImageView) getFooterView().findViewById(R.id.loading);
+            RotateAnimation rotate = new RotateAnimation(0, 360,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            rotate.setDuration(1000);
+            rotate.setRepeatCount(Animation.INFINITE);
+            loading.startAnimation(rotate);
+        }
     }
 
     public int getFootersCount() {

@@ -53,8 +53,9 @@ public class MyRecyclerView extends RecyclerView {
     }
 
     public interface ListRefreshableListener{
-        void onListRefreshable(View header);
-        void onListRefreshing(View header);
+//        void onListRefreshable(View header);
+        void onListRefreshing();
+        void onListLoadMore();
     }
 
     public void setRefreshListListener(ListRefreshableListener listener){
@@ -67,11 +68,15 @@ public class MyRecyclerView extends RecyclerView {
             wrapper = (HeaderFooterWrapper) adapter;
         }
         header = wrapper.getHeaderView();
-        ViewGroup.LayoutParams params = header.getLayoutParams();
-        params.height = 0;
+        if (header != null) {
+            ViewGroup.LayoutParams params = header.getLayoutParams();
+            header.setLayoutParams(params);
+            params.height = 0;
+        }
         headerFinalHeight = 0;
-        header.setLayoutParams(params);
-        footer = wrapper.getFooterView();
+        if (wrapper.getFooterView()!=null) {
+            footer = wrapper.getFooterView();
+        }
         myScrollListener = new MyScrollListener();
         addOnScrollListener(myScrollListener);
         super.setAdapter(adapter);
@@ -93,36 +98,44 @@ public class MyRecyclerView extends RecyclerView {
                 endY = e.getRawY();
                 dy = endY - startY;
                 if (dy > 0) {
-                        if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE
-                                && dy > BUFFER_HEIGHT
-                                && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {    //超过缓冲距离后开始下拉
-                            Log.i("Log", "1");
-                            headerHeight = dy - BUFFER_HEIGHT;
-                            if (header != null) {
-                                Log.i("Log", "2  headerheight="+headerHeight);
-                                ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
-                                layoutParams.height = (int) headerHeight;
-                                header.setLayoutParams(layoutParams);
-                            }
-                            if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT) {        //超过回复距离，图标变换，再拉之后松手就加载
-                                Log.i("Log", "3");
-                                if (!refreshable) {
-                                    refreshable = true;
-                                    wrapper.setHeaderShow();
-                                }
-                            }
-                        } else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW) {      //下拉时header已经处于显示状态
-                            if (dy + headerHeight <= MAX_HEADERHEIGHT) {
-                                Log.i("Log", "4");
-                                if (header != null) {
-                                    ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
-                                    layoutParams.height = (int) (headerHeight + dy);
-                                    header.setLayoutParams(layoutParams);
-                                }
-                            } else {
-                                headerHeight = MAX_HEADERHEIGHT;
+                    if (!scrollingDown) {
+                        if (dy < FIX_HEADERHEIGHT + BUFFER_HEIGHT
+                                && refreshable) {
+                            refreshable = false;
+                            wrapper.setHeaderHide();
+                        }
+                    }
+
+                    if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE
+                            && dy > BUFFER_HEIGHT
+                            && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {    //超过缓冲距离后开始下拉
+                        Log.i("Log", "1");
+                        headerHeight = dy - BUFFER_HEIGHT;
+                        if (header != null) {
+                            Log.i("Log", "2  headerheight=" + headerHeight);
+                            ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
+                            layoutParams.height = (int) headerHeight;
+                            header.setLayoutParams(layoutParams);
+                        }
+                        if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT) {        //超过回复距离，图标变换，再拉之后松手就加载
+                            Log.i("Log", "3");
+                            if (!refreshable) {
+                                refreshable = true;
+                                wrapper.setHeaderShow();
                             }
                         }
+                    } else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW) {      //下拉时header已经处于显示状态
+                        if (dy + headerHeight <= MAX_HEADERHEIGHT) {
+                            Log.i("Log", "4");
+                            if (header != null) {
+                                ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
+                                layoutParams.height = (int) (headerHeight + dy);
+                                header.setLayoutParams(layoutParams);
+                            }
+                        } else {
+                            headerHeight = MAX_HEADERHEIGHT;
+                        }
+                    }
 
                 }
 //                Log.i("Log", "height = "+headerHeight);
@@ -133,8 +146,12 @@ public class MyRecyclerView extends RecyclerView {
                         if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){
                             wrapper.setHeaderStatus(HeaderFooterWrapper.HEADER_SHOW);
                             Log.i("Log", "pullback");
+                            if (listner!=null){
+                                listner.onListRefreshing();
+                            }
                             wrapper.setHeaderLoading();
                             refreshable = false;
+                            hasHeader = true;
                         }
                     }
                 }else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW){
@@ -165,30 +182,32 @@ public class MyRecyclerView extends RecyclerView {
 
 
     private void fixHeaderHeight(){
-        final ViewWrapper headerWrapper = new ViewWrapper(header);
-        ValueAnimator heightA = null;
-        if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW) {
-            heightA =
-                    ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT,
-                            headerWrapper.getV().getLayoutParams().height,
-                            FIX_HEADERHEIGHT);
-            headerHeight = FIX_HEADERHEIGHT;
-        }else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE){
-            heightA =
-                    ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT, headerHeight, 0);
-            headerHeight = 0;
-        }
-        if (heightA != null) {
-            heightA.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    headerWrapper.getV().invalidate();
-                }
-            });
-            heightA.setDuration(200);
-            AnimatorSet as = new AnimatorSet();
-            as.play(heightA);
-            as.start();
+        if (header != null) {
+            final ViewWrapper headerWrapper = new ViewWrapper(header);
+            ValueAnimator heightA = null;
+            if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW) {
+                heightA =
+                        ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT,
+                                headerWrapper.getV().getLayoutParams().height,
+                                FIX_HEADERHEIGHT);
+                headerHeight = FIX_HEADERHEIGHT;
+            } else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE) {
+                heightA =
+                        ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT, headerHeight, 0);
+                headerHeight = 0;
+            }
+            if (heightA != null) {
+                heightA.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        headerWrapper.getV().invalidate();
+                    }
+                });
+                heightA.setDuration(200);
+                AnimatorSet as = new AnimatorSet();
+                as.play(heightA);
+                as.start();
+            }
         }
     }
 
@@ -245,9 +264,14 @@ public class MyRecyclerView extends RecyclerView {
                     && footerEnable
                     && !hasFooter){
                 wrapper.addFooterView(LayoutInflater.from(getContext()).inflate(R.layout.item_listfooter, recyclerView, false));
+                Log.i("LOG", "footer ==================");
+//                wrapper.setFooterLoading();
                 wrapper.notifyItemChanged(wrapper.getHeadersCount() + wrapper.getRealItemCount() + wrapper.getFootersCount());
                 hasFooter = true;
                 footerEnable = false;
+                if (listner!=null){
+                    listner.onListLoadMore();
+                }
             }
         }
 
