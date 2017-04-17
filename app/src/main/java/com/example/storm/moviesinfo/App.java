@@ -1,4 +1,4 @@
-package com.example.storm.moviesinfo.view;
+package com.example.storm.moviesinfo;
 
 import android.app.Application;
 

@@ -1,7 +1,6 @@
 package com.example.storm.moviesinfo.service;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,8 +18,6 @@ import android.util.Log;
 import com.example.storm.moviesinfo.R;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by khb on 2017/3/31.
@@ -35,43 +32,26 @@ public class LocationService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-//        getLocation();
+        getLocation();
         Log.i("Log", "onBind");
-        TimerTask task = new TimerTask() {
-            int i = 0;
-            @Override
-            public void run() {
-                i++;
-                Log.i("Log", i+"");
-                ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-                List<ActivityManager.RunningServiceInfo> runningServices = am.getRunningServices(100);
-                for (int i=0; i<runningServices.size(); i++){
-                    String name = runningServices.get(i).service.getClassName();
-                    if ("com.example.storm.moviesinfo.service.LocationService" .equals(name)){
-                        Log.i("Log", name + "is running");
-                        break;
-                    }
-                }
-            }
-        };
-        Timer timer = new Timer("task");
-        timer.schedule(task, 2000, 10000);
         return locationBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-
+        Log.i("Log", "onUnbind");
         return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
+        Log.i("Log", "onDestroy");
         super.onDestroy();
     }
 
     @Override
     public void onCreate() {
+        Log.i("Log", "onCreate");
         super.onCreate();
     }
 
@@ -94,7 +74,7 @@ public class LocationService extends Service {
         }else {
             locationProvider = LocationManager.PASSIVE_PROVIDER;
         }
-        lm.requestLocationUpdates(locationProvider, 3000, 0, new LocationListener() {
+        lm.requestLocationUpdates(locationProvider, 500, 0, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 if (location!=null){
@@ -127,7 +107,7 @@ public class LocationService extends Service {
 
     }
 
-    private final ILocationService.Stub locationBinder = new ILocationService.Stub() {
+    ILocationService.Stub locationBinder = new ILocationService.Stub() {
         @Override
         public String notifyLocation() throws RemoteException {
             return locationMsg;

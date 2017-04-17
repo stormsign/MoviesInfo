@@ -20,7 +20,6 @@ public class RequestSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
-
         onFinally();
     }
 

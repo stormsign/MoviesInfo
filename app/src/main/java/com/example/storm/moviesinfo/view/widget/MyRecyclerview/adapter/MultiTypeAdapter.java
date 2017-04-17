@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.model.Visitor;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.types.TypeFactory;
-import com.example.storm.moviesinfo.view.widget.MyRecyclerview.types.TypeFactoryForRecyclerView;
+import com.example.storm.moviesinfo.view.adapter.TypeFactoryForRecyclerView;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.viewholder.BaseViewHolder;
 
 import java.util.List;
