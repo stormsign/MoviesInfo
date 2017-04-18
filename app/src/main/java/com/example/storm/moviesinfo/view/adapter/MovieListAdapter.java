@@ -1,8 +1,5 @@
 package com.example.storm.moviesinfo.view.adapter;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +19,9 @@ public class MovieListAdapter extends RecyclerView.Adapter<BaseViewHolder>{
     private TypeFactoryForRecyclerView typeFactory;
     private View view;
 
+    private boolean isLoading;  //是否在加载
+    private boolean hasNoData;  //是否没有数据
+
     public MovieListAdapter(List<Visitor> models){
         this.models = models;
         this.typeFactory = new TypeFactoryForRecyclerView();
@@ -37,26 +37,28 @@ public class MovieListAdapter extends RecyclerView.Adapter<BaseViewHolder>{
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
         holder.setUpView(models.get(position), position);
-        Animator[] animators = new Animator[]{
-                ObjectAnimator.ofFloat(view, View.ALPHA, 0, 1f).setDuration(500),
-                ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 200, 0).setDuration(500)
-        };
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(animators);
-        set.start();
-
     }
 
     @Override
     public int getItemCount() {
-        if (models == null){
-            return  0 ;
-        }
-        return models.size();
+        hasNoData = models == null || models.isEmpty();
+        return hasNoData?0:models.size();
     }
 
     @Override
     public int getItemViewType(int position) {
         return models.get(position).type(typeFactory);
+    }
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
+
+    public boolean hasNoData(){
+        return  hasNoData;
     }
 }

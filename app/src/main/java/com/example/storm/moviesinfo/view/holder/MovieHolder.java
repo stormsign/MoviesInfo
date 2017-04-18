@@ -1,5 +1,8 @@
 package com.example.storm.moviesinfo.view.holder;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
@@ -60,6 +63,14 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
         ((TextView)getView(R.id.premiereTime)).setText(movie.getPlayDate().getShowname()+"："+movie.getPlayDate().getData());
         ((TextView)getView(R.id.director)).setText(movie.getDirector().getShowname() + "："+movie.getDirector().getData().getGroupString());
         ((TextView)getView(R.id.cast)).setText(movie.getStar().getShowname()+"："+movie.getStar().getData().getGroupString());
+
+        Animator[] animators = new Animator[]{
+                ObjectAnimator.ofFloat(itemView, View.ALPHA, 0, 1f).setDuration(500),
+                ObjectAnimator.ofFloat(itemView, View.TRANSLATION_Y, 200, 0).setDuration(500)
+        };
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(animators);
+        set.start();
     }
 
     //设置影片标签

@@ -3,7 +3,6 @@ package com.example.storm.moviesinfo.view.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,7 +73,6 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         wrapper = new HeaderFooterWrapper(adapter);
         wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listheader, mMovieList, false));
         mMovieList.setAdapter(wrapper);
-        mMovieList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mMovieList.setRefreshListListener(new MyRecyclerView.ListRefreshableListener() {
             @Override
             public void onListRefreshing() {
@@ -83,16 +81,8 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
             @Override
             public void onListLoadMore() {
-//                mPresenter.loadData(city, dataType);
-//                final View footerview = View.inflate(getContext(), R.layout.item_listfooter, null);
-//                contentView.addView(footerview);
-//                ImageView loading = (ImageView) footerview.findViewById(R.id.loading);
-//                RotateAnimation rotate = new RotateAnimation(0, 360,
-//                        Animation.RELATIVE_TO_SELF, 0.5f,
-//                        Animation.RELATIVE_TO_SELF, 0.5f);
-//                rotate.setDuration(1000);
-//                rotate.setRepeatCount(Animation.INFINITE);
-//                loading.startAnimation(rotate);
+
+//                测试代码
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

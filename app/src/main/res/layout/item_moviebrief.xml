@@ -93,6 +93,8 @@
             app:layout_constraintLeft_toRightOf="@+id/poster" />
     </android.support.constraint.ConstraintLayout>
 
-
+    <View android:layout_width="match_parent"
+        android:layout_height="0.4dp"
+        android:background="@color/md_grey_600"/>
 
 </LinearLayout>

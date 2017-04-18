@@ -156,7 +156,7 @@ public class RequestBuilder {
                             if (result != null) {   //数据有效
                                 MovieList movieList = result.getData().get(0);
                                 if (movieList!=null ){   //正在上映电影数据有效
-                                    if (movieList.getData()!=null && movieList.getData().size()>0){     //正在上映电影列表不为空
+                                    if (movieList.getData()!=null && !movieList.getData().isEmpty()){     //正在上映电影列表不为空
                                         return movieList.getData();
                                     }
                                     throw new ResultException(ResultException.EMPTY,
