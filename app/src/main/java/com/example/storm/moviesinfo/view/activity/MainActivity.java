@@ -103,7 +103,6 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
         mPager.setAdapter(adapter);
         mTab.setupWithViewPager(mPager);
 
-
         //左侧抽屉导航栏
         ImageView drawerHeaderImg = (ImageView) mNav.getHeaderView(0).findViewById(R.id.drawer_header_img);
         Glide.with(this).load(R.drawable.pic_movies).into(drawerHeaderImg);

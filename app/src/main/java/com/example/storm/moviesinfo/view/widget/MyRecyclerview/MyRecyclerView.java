@@ -109,16 +109,13 @@ public class MyRecyclerView extends RecyclerView {
                     if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE
                             && dy > BUFFER_HEIGHT
                             && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {    //超过缓冲距离后开始下拉
-                        Log.i("Log", "1");
                         headerHeight = dy - BUFFER_HEIGHT;
                         if (header != null) {
-                            Log.i("Log", "2  headerheight=" + headerHeight);
                             ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
                             layoutParams.height = (int) headerHeight;
                             header.setLayoutParams(layoutParams);
                         }
                         if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT) {        //超过回复距离，图标变换，再拉之后松手就加载
-                            Log.i("Log", "3");
                             if (!refreshable) {
                                 refreshable = true;
                                 wrapper.setHeaderShow();
@@ -126,7 +123,6 @@ public class MyRecyclerView extends RecyclerView {
                         }
                     } else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW) {      //下拉时header已经处于显示状态
                         if (dy + headerHeight <= MAX_HEADERHEIGHT) {
-                            Log.i("Log", "4");
                             if (header != null) {
                                 ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
                                 layoutParams.height = (int) (headerHeight + dy);
@@ -138,7 +134,6 @@ public class MyRecyclerView extends RecyclerView {
                     }
 
                 }
-//                Log.i("Log", "height = "+headerHeight);
                 break;
             case MotionEvent.ACTION_UP:
                 if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE){
@@ -286,10 +281,8 @@ public class MyRecyclerView extends RecyclerView {
             boolean isSignificantDelta = Math.abs(dy) > scrollDownThreshold;
                 //pagedown
                 if (dy > 0) {
-                    Log.i("Log", "up");
                     scrollingDown = false;
                 }else {
-                    Log.i("Log", "down");
                     scrollingDown = true;
                 }
         }

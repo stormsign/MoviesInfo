@@ -10,4 +10,6 @@
     <string name="closeDrawerContentDesc">close main page drawer</string>
     <string name="location_no_permission">应用没有被授予位置权限</string>
     <string name="location_no_provider">无法获取位置信息</string>
+    <string name="list_nodata">暂无数据</string>
+    <string name="list_loading">正在加载</string>
 </resources>

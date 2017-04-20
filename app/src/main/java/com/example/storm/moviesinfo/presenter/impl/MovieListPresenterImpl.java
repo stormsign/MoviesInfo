@@ -57,6 +57,9 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
                 super.onError(e);
                 Log.i("Log", "onError");
                 e.printStackTrace();
+//                if (e instanceof ResultException){
+                    fragment.onLoadFailed(0, null);
+//                }
             }
         };
         Observable<List<MovieBrief>> observable;

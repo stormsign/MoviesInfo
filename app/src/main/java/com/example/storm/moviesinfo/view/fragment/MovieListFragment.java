@@ -69,7 +69,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         list = new ArrayList<>();
 
         mMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MovieListAdapter(list);
+        adapter = new MovieListAdapter(getActivity(), list);
         wrapper = new HeaderFooterWrapper(adapter);
         wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listheader, mMovieList, false));
         mMovieList.setAdapter(wrapper);
@@ -111,7 +111,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         super.onViewCreated(view, savedInstanceState);
         dataType = getArguments().getInt("type");
         mPresenter.loadData(city, dataType);
-
+        adapter.setFirstLoading(true);
     }
 
     @Override
@@ -123,6 +123,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
     @Override
     public void onLoadData(List<MovieBrief> movieList) {
+        adapter.setFirstLoading(false);
         list.clear();
         list.addAll(movieList);
         wrapper.notifyDataSetChanged();
@@ -136,6 +137,17 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
     @Override
     public void onLoadFailed(int errCode, String msg) {
-
+        mMovieList.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                adapter.setHasNoData(true);
+                list.clear();
+                wrapper.notifyDataSetChanged();
+                if (mMovieList.hasHeader){
+                    mMovieList.removeHeader();
+                }
+            }
+        }, 1000);
     }
+
 }

@@ -15,8 +15,7 @@ import com.example.storm.moviesinfo.view.widget.MyRecyclerview.viewholder.BaseVi
 public class TypeFactoryForRecyclerView implements TypeFactory {
 
     private final int MOVIEBRIEF = R.layout.item_moviebrief;
-    private final int LISTHOLDER = R.layout.item_holder;
-
+    public final int LISTHOLDER = R.layout.item_holder;
 //    private final int TYPE_TWO = R.layout.item_type_two;
 //    private final int TYPE_THREE = R.layout.item_type_three;
 
