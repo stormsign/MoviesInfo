@@ -136,18 +136,19 @@ public class MyRecyclerView extends RecyclerView {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE){
-                    if (dy >= BUFFER_HEIGHT){
-                        if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){
-                            wrapper.setHeaderStatus(HeaderFooterWrapper.HEADER_SHOW);
-                            Log.i("Log", "pullback");
-                            if (listner!=null){
-                                listner.onListRefreshing();
-                            }
-                            wrapper.setHeaderLoading();
-                            refreshable = false;
-                            hasHeader = true;
+                if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE) {
+                    if (dy >= BUFFER_HEIGHT
+                            && dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT
+                            && headerEnable) {
+                        wrapper.setHeaderStatus(HeaderFooterWrapper.HEADER_SHOW);
+                        Log.i("Log", "pullback");
+                        if (listner != null) {
+                            listner.onListRefreshing();
                         }
+                        wrapper.setHeaderLoading();
+                        refreshable = false;
+                        hasHeader = true;
+
                     }
                 }else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW){
 
@@ -240,11 +241,9 @@ public class MyRecyclerView extends RecyclerView {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE
-                    && firstVisibleItem == wrapper.getHeadersCount()
-                    && !headerEnable
-                    ) {
-                headerEnable = true;
+            if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                headerEnable = firstVisibleItem == wrapper.getHeadersCount();
+                Log.i("Log", "headerEnable = " + headerEnable);
             }
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && lastVisibleItem == wrapper.getItemCount() - 1
@@ -274,9 +273,9 @@ public class MyRecyclerView extends RecyclerView {
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             lastVisibleItem =
-                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
             firstVisibleItem =
-                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
             boolean isSignificantDelta = Math.abs(dy) > scrollDownThreshold;
                 //pagedown
