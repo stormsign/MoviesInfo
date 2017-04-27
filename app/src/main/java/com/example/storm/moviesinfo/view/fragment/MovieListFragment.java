@@ -81,7 +81,6 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
             @Override
             public void onListLoadMore() {
-
 //                测试代码
                 new Thread(new Runnable() {
                     @Override

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -37,7 +38,7 @@ import org.polaric.colorful.Colorful;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements ServiceConnection {
+public class MainActivity extends BaseActivity implements ServiceConnection, NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.main_drawer)
     DrawerLayout mDrawer;
@@ -59,6 +60,7 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
     private double lon;
     private String locationMsg;
     private ILocationService locationService;
+    private FloatingActionButton mFab;
     //    private LocationService.MyBinder binder;
 
     @Override
@@ -74,8 +76,8 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
                 isAppBarCollapsed = verticalOffset>0;   //appbar是否被折叠，作为是否需要回到顶端的依据
             }
         });
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.main_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFab = (FloatingActionButton) findViewById(R.id.main_fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
@@ -121,6 +123,8 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
 
             }
         });
+        mNav.setNavigationItemSelectedListener(this);
+        //开启定位服务
         Intent intent = new Intent(this, LocationService.class);
         intent.setPackage("com.example.storm.moviesinfo.service");
         bindService(intent, this, BIND_AUTO_CREATE);
@@ -137,6 +141,13 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        final MenuItem item = menu.findItem(R.id.action_settings);
+        item.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(item);
+            }
+        });
         return true;
     }
 
@@ -145,6 +156,8 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            Toast.makeText(MainActivity.this, "票房", Toast.LENGTH_SHORT).show();
+//            startActivity(new Intent(MainActivity.this, BoxOfficeActivity.class));
             return true;
         }
 
@@ -152,6 +165,41 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (hasFocus){
+            mFab.hide();
+        }
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_theme:
+                startActivity(new Intent(MainActivity.this, ThemeActivity.class));
+                break;
+            case R.id.menu_settings:
+
+                break;
+            case R.id.menu_share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "分享内容");
+                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(Intent.createChooser(shareIntent, "分享"));
+                break;
+        }
+        return false;
+    }
+
+
+
+
+
+
+    @Override
+
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.i("Log", "onServiceConnected");
         locationService = ILocationService.Stub.asInterface(service);

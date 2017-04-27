@@ -24,9 +24,11 @@ public class FloatingActionBarBehavior extends FloatingActionButton.Behavior {
 
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        if (dyConsumed>=0 && dyUnconsumed >= 0){    //上滑监听
+        if ((dyConsumed > 0 && dyUnconsumed == 0) || (dyConsumed == 0
+                && dyUnconsumed > 0)){    //上滑监听
             child.show();
-        }else if (dyConsumed < 0 && dyUnconsumed <= 0){      //下滑监听
+        }else if ((dyConsumed < 0 && dyUnconsumed == 0) || (dyConsumed == 0
+                && dyUnconsumed < 0)){      //下滑监听
             child.hide();
         }
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);

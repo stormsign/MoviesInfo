@@ -42,6 +42,8 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
 
         if (movie.getGrade()!=null) {   //设置评分
             SimpleRatingBar ratingBar = (SimpleRatingBar) getView(R.id.stars);
+            TextView rating = (TextView) getView(R.id.rating);
+            rating.setText(movie.getGrade() + " / 10");
             ratingBar.setVisibility(View.VISIBLE);
             ratingBar.setBorderColor(itemView.getContext().getResources()
                     .getColor(Colorful.getThemeDelegate().getAccentColor().getColorRes()));
@@ -50,6 +52,7 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
             ratingBar.setRating(Float.parseFloat(movie.getGrade())/2);
         }else {
             getView(R.id.stars).setVisibility(View.GONE);
+            getView(R.id.rating).setVisibility(View.GONE);
         }
         AutoColumnLinearLayout tags = ((AutoColumnLinearLayout)getView(R.id.tags));
         tags.setTotalSpanCount(2);
@@ -63,6 +66,7 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
         ((TextView)getView(R.id.premiereTime)).setText(movie.getPlayDate().getShowname()+"："+movie.getPlayDate().getData());
         ((TextView)getView(R.id.director)).setText(movie.getDirector().getShowname() + "："+movie.getDirector().getData().getGroupString());
         ((TextView)getView(R.id.cast)).setText(movie.getStar().getShowname()+"："+movie.getStar().getData().getGroupString());
+
 
         Animator[] animators = new Animator[]{
                 ObjectAnimator.ofFloat(itemView, View.ALPHA, 0, 1f).setDuration(500),
