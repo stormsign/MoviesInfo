@@ -10,15 +10,6 @@ import android.view.View;
 public abstract class BaseViewHolder<T> extends RecyclerView.ViewHolder {
     private SparseArrayCompat<View> views;
     protected View mItemView;
-    private ItemClickListener itemClickListener;
-    public interface ItemClickListener{
-        void onclick();
-    }
-
-    public void setItemClickListener(){
-        this.itemClickListener = itemClickListener;
-    }
-
     public BaseViewHolder(View itemView) {
         super(itemView);
         views = new SparseArrayCompat<>();

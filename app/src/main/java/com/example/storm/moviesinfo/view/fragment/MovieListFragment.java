@@ -1,6 +1,9 @@
 package com.example.storm.moviesinfo.view.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,14 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.presenter.impl.MovieListPresenterImpl;
+import com.example.storm.moviesinfo.view.activity.MovieDetailActivity;
 import com.example.storm.moviesinfo.view.adapter.MovieListAdapter;
 import com.example.storm.moviesinfo.view.iview.IMovieListFragment;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.HeaderFooterWrapper;
+import com.example.storm.moviesinfo.view.widget.MyRecyclerview.ItemClickListener;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.MyRecyclerView;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.model.Visitor;
 
@@ -44,6 +50,15 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     private List<Visitor> list;
     private MovieListAdapter adapter;
     private HeaderFooterWrapper wrapper;
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (mMovieList.hasFooter){
+                mMovieList.removeFooter();
+            }
+        }
+    };
 
     public static MovieListFragment newInstance(int fragmentType){
         MovieListFragment fragment = new MovieListFragment();
@@ -82,24 +97,16 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
             @Override
             public void onListLoadMore() {
 //                测试代码
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(2000);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (mMovieList.hasFooter){
-                                        mMovieList.removeFooter();
-                                    }
-                                }
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                handler.sendEmptyMessageDelayed(0, 2000);
+            }
+        });
+        mMovieList.setOnItemClickListener(new ItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                MovieBrief movie = (MovieBrief) list.get(position);
+                Toast.makeText(getActivity(), "movie name = " + movie.getTvTitle(), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), MovieDetailActivity.class)
+                        .putExtra("posterUrl", movie.getIconaddress()));
             }
         });
         return view;
@@ -147,6 +154,10 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
                 }
             }
         }, 1000);
+    }
+
+    public void backToTop(){
+        mMovieList.smoothScrollToPosition(0);
     }
 
 }

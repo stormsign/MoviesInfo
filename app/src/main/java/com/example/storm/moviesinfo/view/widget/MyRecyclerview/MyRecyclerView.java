@@ -39,17 +39,23 @@ public class MyRecyclerView extends RecyclerView {
     public boolean scrollingDown ;
     private MyScrollListener myScrollListener;
     private ListRefreshableListener listner;
+    private ItemClickListener.OnItemClickListener onItemClickListener;
+
+    private Context context;
 
     public MyRecyclerView(Context context) {
         super(context);
+        this.context = context;
     }
 
     public MyRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
     }
 
     public MyRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
     }
 
     public interface ListRefreshableListener{
@@ -60,6 +66,20 @@ public class MyRecyclerView extends RecyclerView {
 
     public void setRefreshListListener(ListRefreshableListener listener){
         listner = listener;
+    }
+
+    public void setOnItemClickListener(ItemClickListener.OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
+        this.addOnItemTouchListener(new ItemClickListener(context, this, this.onItemClickListener));
+    }
+
+    public HeaderFooterWrapper getWrapper(){
+        return wrapper;
+    }
+
+    @Override
+    public Adapter getAdapter() {
+        return this.wrapper.getInnerAdapter();
     }
 
     @Override

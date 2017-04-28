@@ -24,8 +24,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<BaseViewHolder>{
     private TypeFactoryForRecyclerView typeFactory;
     private View view;
 
-    private int currentViewType;
-
     private boolean isFirstLoading;  //是否在加载
     private boolean hasNoData;  //是否没有数据
 

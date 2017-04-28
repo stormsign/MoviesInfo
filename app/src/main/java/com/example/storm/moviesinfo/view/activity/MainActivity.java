@@ -12,7 +12,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -73,22 +72,10 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Nav
         mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                isAppBarCollapsed = verticalOffset>0;   //appbar是否被折叠，作为是否需要回到顶端的依据
+                isAppBarCollapsed = verticalOffset<0;   //appbar是否被折叠，作为是否需要回到顶端的依据
             }
         });
         mFab = (FloatingActionButton) findViewById(R.id.main_fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    Toast.makeText(MainActivity.this, locationService.notifyLocation(), Toast.LENGTH_LONG).show();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-            }
-        });
 
         //toolbar左侧的material design风格箭头
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, mToolBar,
@@ -97,13 +84,29 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Nav
         toggle.syncState();
 
         mTab.setBackgroundResource(Colorful.getThemeDelegate().getPrimaryColor().getColorRes());
-        MovieListFragment fragment0 = MovieListFragment.newInstance(0);
+        final MovieListFragment fragment0 = MovieListFragment.newInstance(0);
         MovieListFragment fragment1 = MovieListFragment.newInstance(1);
-        Fragment[] fragments = new Fragment[]{fragment0, fragment1};
+        final MovieListFragment[] fragments = new MovieListFragment[]{fragment0, fragment1};
         TabAdapter adapter = new TabAdapter(getSupportFragmentManager(), fragments);
         adapter.setPageTitle(new String[]{"正在上映", "即将上映"});
         mPager.setAdapter(adapter);
         mTab.setupWithViewPager(mPager);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isAppBarCollapsed){
+                    fragments[mPager.getCurrentItem()].backToTop();
+                    mAppBar.setExpanded(true);
+                }
+//                try {
+//                    Toast.makeText(MainActivity.this, locationService.notifyLocation(), Toast.LENGTH_LONG).show();
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                }
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+            }
+        });
 
         //左侧抽屉导航栏
         ImageView drawerHeaderImg = (ImageView) mNav.getHeaderView(0).findViewById(R.id.drawer_header_img);
