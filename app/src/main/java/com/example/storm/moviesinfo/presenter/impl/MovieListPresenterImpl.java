@@ -1,11 +1,13 @@
 package com.example.storm.moviesinfo.presenter.impl;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.net.RequestBuilder;
 import com.example.storm.moviesinfo.net.RequestSubscriber;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
+import com.example.storm.moviesinfo.util.SPUtils;
 import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
 
 import java.util.List;
@@ -70,6 +72,54 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
         }
         observable.subscribe(mSubscriber);
 
+    }
+
+    @Override
+    public void loadData(int dataType) {
+        Log.i("Log", "loadData");
+        if (TextUtils.isEmpty(SPUtils.getCity())){
+            fragment.showPositioningDialog();
+
+        }
+        String city = SPUtils.getCity();
+        mSubscriber = new RequestSubscriber<List<MovieBrief>>() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                Log.i("Log", "onStart");
+            }
+
+            @Override
+            public void onNext(List<MovieBrief> movieListResponse) {
+                super.onNext(movieListResponse);
+                Log.i("Log", "onNext");
+                Log.i("Log", "movieListResponse = " + movieListResponse.toString());
+                fragment.onLoadData(movieListResponse);
+            }
+
+            @Override
+            public void onCompleted() {
+                super.onCompleted();
+                Log.i("Log", "onCompleted");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                super.onError(e);
+                Log.i("Log", "onError");
+                e.printStackTrace();
+//                if (e instanceof ResultException){
+                fragment.onLoadFailed(0, null);
+//                }
+            }
+        };
+        Observable<List<MovieBrief>> observable;
+        if (dataType == 0){
+            observable = builder.getMovieInTheaterList(city);
+        }else {
+            observable = builder.getMovieInComingList(city);
+        }
+        observable.subscribe(mSubscriber);
     }
 
     @Override

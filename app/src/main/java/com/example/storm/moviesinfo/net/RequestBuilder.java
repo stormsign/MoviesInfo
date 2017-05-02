@@ -37,7 +37,7 @@ public class RequestBuilder {
     private final MovieRequestService service;
     private Call<MovieResponse> movieInfoCall;
 
-    public RequestBuilder(){
+    public RequestBuilder() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.JUHE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -46,7 +46,7 @@ public class RequestBuilder {
         service = retrofit.create(MovieRequestService.class);
     }
 
-    public void getMovie(String name){
+    public void getMovie(String name) {
         movieInfoCall = service.getMovieInfo("json", name, Constants.JUHE_KEY);
         movieInfoCall.enqueue(new Callback<MovieResponse>() {
             @Override
@@ -61,12 +61,12 @@ public class RequestBuilder {
         });
     }
 
-    public void getMoviePost(String name){
+    public void getMoviePost(String name) {
         Call<MovieResponse> movieInfoPost = service.getMovieInfoPost("json", name, Constants.JUHE_KEY);
         movieInfoPost.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                Log.i("Log", "POST  "+response.body().toString());
+                Log.i("Log", "POST  " + response.body().toString());
             }
 
             @Override
@@ -77,7 +77,7 @@ public class RequestBuilder {
 
     }
 
-    public void getMoviePost2(String name){
+    public void getMoviePost2(String name) {
         Map<String, Object> map = new HashMap<>();
         map.put("dtype", "json");
         map.put("q", name);
@@ -86,7 +86,7 @@ public class RequestBuilder {
         movieInfoPost.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                Log.i("Log", "POST  "+response.body().toString());
+                Log.i("Log", "POST  " + response.body().toString());
             }
 
             @Override
@@ -97,7 +97,7 @@ public class RequestBuilder {
 
     }
 
-    public void getMovieInfo(final Context context, String name){
+    public void getMovieInfo(final Context context, String name) {
         Map<String, Object> map = new HashMap<>();
         map.put("dtype", "json");
         map.put("q", name);
@@ -140,8 +140,8 @@ public class RequestBuilder {
                 });
     }
 
-//    正在上映电影列表
-    public Observable<List<MovieBrief>> getMovieInTheaterList(String city){
+    //    正在上映电影列表
+    public Observable<List<MovieBrief>> getMovieInTheaterList(String city) {
         Map<String, Object> map = new HashMap<>();
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
@@ -155,8 +155,8 @@ public class RequestBuilder {
                             MovieListWrapper result = movieListResponse.getResult();
                             if (result != null) {   //数据有效
                                 MovieList movieList = result.getData().get(0);
-                                if (movieList!=null ){   //正在上映电影数据有效
-                                    if (movieList.getData()!=null && !movieList.getData().isEmpty()){     //正在上映电影列表不为空
+                                if (movieList != null) {   //正在上映电影数据有效
+                                    if (movieList.getData() != null && !movieList.getData().isEmpty()) {     //正在上映电影列表不为空
                                         return movieList.getData();
                                     }
                                     throw new ResultException(ResultException.EMPTY,
@@ -174,8 +174,9 @@ public class RequestBuilder {
                 });
         return movieList;
     }
-//    即将上映电影列表
-    public Observable<List<MovieBrief>> getMovieInComingList(String city){
+
+    //    即将上映电影列表
+    public Observable<List<MovieBrief>> getMovieInComingList(String city) {
         Map<String, Object> map = new HashMap<>();
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
@@ -202,4 +203,12 @@ public class RequestBuilder {
                 });
         return movieList;
     }
+
+    public Observable<String> getLocationName(){
+
+
+
+        return null;
+    }
+
 }

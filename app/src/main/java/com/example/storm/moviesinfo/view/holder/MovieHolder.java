@@ -35,8 +35,8 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
     @Override
     public void setUpView(MovieBrief movie, int position) {
         Glide.with(itemView.getContext()).load(movie.getIconaddress())
-                .placeholder(R.drawable.svg_ic_attention)
-                .error(R.drawable.svg_ic_attention)
+//                .placeholder(R.drawable.svg_ic_attention)
+//                .error(R.drawable.svg_ic_attention)
                 .into((ImageView) getView(R.id.poster));
         ((TextView)getView(R.id.movieName)).setText(movie.getTvTitle());
 

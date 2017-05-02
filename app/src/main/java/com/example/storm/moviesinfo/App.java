@@ -9,6 +9,7 @@ import org.polaric.colorful.Colorful;
  */
 
 public class App extends Application {
+    private static App instance;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -18,5 +19,10 @@ public class App extends Application {
                 .translucent(false)
                 .dark(false);
         Colorful.init(this);
+        instance = this;
+    }
+
+    public static App getAppContext(){
+        return instance;
     }
 }

@@ -21,6 +21,9 @@
             <meta-data android:name="android.max_aspect"
             android:value="2.1"/>
         -->
+        <service
+            android:name=".service.LocationService"
+            android:label="定位service" />
 
         <activity
             android:name=".view.activity.MainActivity"
@@ -36,15 +39,11 @@
         <activity
             android:name=".view.activity.BoxOfficeActivity"
             android:label="@string/title_activity_box_office" />
-
-        <service
-            android:name=".service.LocationService"
-            android:label="定位service" />
-
         <activity
             android:name=".view.activity.MovieDetailActivity"
             android:label="@string/title_activity_movie_detail"
             android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

@@ -6,9 +6,8 @@ import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
  * Created by khb on 2017/3/28.
  */
 
-public interface IMovieListPresenter {
+public interface IMovieListPresenter extends BasePresenter{
     void register(MovieListFragment fragment);
     void loadData(String city, int dataType);
-    void unregister();
-
+    void loadData(int dataType);
 }

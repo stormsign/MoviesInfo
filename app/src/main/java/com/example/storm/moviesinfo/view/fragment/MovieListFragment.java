@@ -1,5 +1,6 @@
 package com.example.storm.moviesinfo.view.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,8 @@ import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.presenter.impl.MovieListPresenterImpl;
+import com.example.storm.moviesinfo.util.SPUtils;
+import com.example.storm.moviesinfo.view.activity.MainActivity;
 import com.example.storm.moviesinfo.view.activity.MovieDetailActivity;
 import com.example.storm.moviesinfo.view.adapter.MovieListAdapter;
 import com.example.storm.moviesinfo.view.iview.IMovieListFragment;
@@ -51,6 +54,8 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     private MovieListAdapter adapter;
     private HeaderFooterWrapper wrapper;
 
+    private MainActivity activity;
+
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -82,6 +87,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         View view = inflater.inflate(R.layout.fragment_movielist, container, false);
         ButterKnife.bind(this, view);
         list = new ArrayList<>();
+        SPUtils.saveCity(city);
 
         mMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new MovieListAdapter(getActivity(), list);
@@ -121,10 +127,28 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     }
 
     @Override
+    public void onAttach(Context context) {
+        this.activity = (MainActivity) context;
+        super.onAttach(context);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if (mPresenter!=null)
             mPresenter.unregister();
+    }
+
+    public void showPositioningDialog(){
+        if (activity!=null){
+            activity.showPositioningDialog();
+        }
+    }
+
+    public void hidePositioningDialog(){
+        if (activity!=null){
+            activity.hidePositioningDialog();
+        }
     }
 
     @Override

@@ -11,11 +11,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.storm.moviesinfo.R;
+import com.example.storm.moviesinfo.util.SPHelper;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
 
@@ -61,6 +61,8 @@ public class SplashActivity extends AppCompatActivity {
         mBgImg.setTransitionGenerator(generator);
         Glide.with(this).load(R.mipmap.pic_cinema).into(mBgImg);
 
+
+        SPHelper.init(this);
         mHandler = new Handler();
         jumpToMain();
     }

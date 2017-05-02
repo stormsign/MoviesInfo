@@ -15,6 +15,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -60,6 +62,7 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Nav
     private String locationMsg;
     private ILocationService locationService;
     private FloatingActionButton mFab;
+    private AppCompatDialog dialog;
     //    private LocationService.MyBinder binder;
 
     @Override
@@ -130,7 +133,7 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Nav
         //开启定位服务
         Intent intent = new Intent(this, LocationService.class);
         intent.setPackage("com.example.storm.moviesinfo.service");
-        bindService(intent, this, BIND_AUTO_CREATE);
+//        bindService(intent, this, BIND_AUTO_CREATE);
 
 
     }
@@ -196,8 +199,18 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Nav
         return false;
     }
 
+    public void showPositioningDialog(){
+        dialog = new AppCompatDialog(this);
+        dialog.setContentView(R.layout.dialog_hint_positioning);
+        ((TextView) dialog.findViewById(R.id.message)).setText(getResources().getText(R.string.text_positioning));
+        dialog.show();
+    }
 
-
+    public void hidePositioningDialog(){
+        if (dialog!=null){
+            dialog.hide();
+        }
+    }
 
 
 
