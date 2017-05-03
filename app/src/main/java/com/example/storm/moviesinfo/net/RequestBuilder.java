@@ -1,15 +1,22 @@
 package com.example.storm.moviesinfo.net;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.example.storm.moviesinfo.App;
 import com.example.storm.moviesinfo.model.movieinfo.MovieResponse;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.model.movielist.MovieList;
 import com.example.storm.moviesinfo.model.movielist.MovieListResponse;
 import com.example.storm.moviesinfo.model.movielist.MovieListWrapper;
 import com.example.storm.moviesinfo.util.Constants;
+import com.example.storm.moviesinfo.util.SPUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +30,9 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -205,10 +214,47 @@ public class RequestBuilder {
     }
 
     public Observable<String> getLocationName(){
+        Observable<String> stringObservable = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                AMapLocationClient client = new AMapLocationClient(App.getAppContext());
+                AMapLocationClientOption option = new AMapLocationClientOption();
+                option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
+                option.setOnceLocation(true);
+                client.setLocationOption(option);
+                client.setLocationListener(new AMapLocationListener() {
+                    @Override
+                    public void onLocationChanged(AMapLocation aMapLocation) {
+                        subscriber.onNext(aMapLocation.getCity());
+                        subscriber.onCompleted();
+                    }
+                });
+            }
+        });
+        stringObservable
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        //检查city值是否存在
+                        if (TextUtils.isEmpty(SPUtils.getCity())){
+                            throw new ResultException(-1, "没有设置城市");
+                        }
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .flatMap(new Func1<String, Observable<MovieListResponse>>() {
+                    @Override
+                    public Observable<MovieListResponse> call(String s) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("city", s);
+                        map.put("key", Constants.JUHE_KEY);
+                        return service.getRecentMovieList(map);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread());
 
-
-
-        return null;
+        return stringObservable;
     }
 
 }
