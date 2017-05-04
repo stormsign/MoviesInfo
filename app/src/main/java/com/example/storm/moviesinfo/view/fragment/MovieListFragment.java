@@ -18,7 +18,6 @@ import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.presenter.impl.MovieListPresenterImpl;
-import com.example.storm.moviesinfo.util.SPUtils;
 import com.example.storm.moviesinfo.view.activity.MainActivity;
 import com.example.storm.moviesinfo.view.activity.MovieDetailActivity;
 import com.example.storm.moviesinfo.view.adapter.MovieListAdapter;
@@ -87,7 +86,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         View view = inflater.inflate(R.layout.fragment_movielist, container, false);
         ButterKnife.bind(this, view);
         list = new ArrayList<>();
-        SPUtils.saveCity(city);
+//        SPUtils.saveCity(city);
 
         mMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new MovieListAdapter(getActivity(), list);
@@ -97,7 +96,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         mMovieList.setRefreshListListener(new MyRecyclerView.ListRefreshableListener() {
             @Override
             public void onListRefreshing() {
-                mPresenter.loadData(city, dataType);
+                mPresenter.loadData();
             }
 
             @Override
@@ -122,7 +121,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dataType = getArguments().getInt("type");
-        mPresenter.loadData(city, dataType);
+        mPresenter.loadData();
         adapter.setFirstLoading(true);
     }
 

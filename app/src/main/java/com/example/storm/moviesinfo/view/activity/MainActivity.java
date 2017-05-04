@@ -140,7 +140,7 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Nav
 
     @Override
     protected void onDestroy() {
-        unbindService(this);
+//        unbindService(this);
         super.onDestroy();
     }
 
