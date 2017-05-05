@@ -16,7 +16,6 @@ import com.example.storm.moviesinfo.model.movielist.MovieList;
 import com.example.storm.moviesinfo.model.movielist.MovieListResponse;
 import com.example.storm.moviesinfo.model.movielist.MovieListWrapper;
 import com.example.storm.moviesinfo.util.Constants;
-import com.example.storm.moviesinfo.util.SPUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -213,7 +211,7 @@ public class RequestBuilder {
         return movieList;
     }
 
-    public Observable<String> getLocationName(){
+    public Observable<String> getLocationCity(){
         Observable<String> stringObservable = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> subscriber) {
@@ -233,26 +231,15 @@ public class RequestBuilder {
         });
         stringObservable
                 .subscribeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Action1<String>() {
                     @Override
-                    public void call() {
-                        //检查city值是否存在
-                        if (TextUtils.isEmpty(SPUtils.getCity())){
-                            throw new ResultException(-1, "没有设置城市");
+                    public void call(String s) {
+                        if (TextUtils.isEmpty(s)){
+                            throw new ResultException(-2, "定位失败");
                         }
                     }
-                })
-                .observeOn(Schedulers.io())
-                .flatMap(new Func1<String, Observable<MovieListResponse>>() {
-                    @Override
-                    public Observable<MovieListResponse> call(String s) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("city", s);
-                        map.put("key", Constants.JUHE_KEY);
-                        return service.getRecentMovieList(map);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread());
+                });
 
         return stringObservable;
     }

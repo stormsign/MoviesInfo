@@ -22,6 +22,7 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
     private MovieListFragment fragment;
     private RequestBuilder builder;
     private RequestSubscriber mSubscriber;
+    private RequestSubscriber mLocationSubscriber;
 
     @Override
     public void register(MovieListFragment fragment) {
@@ -30,100 +31,82 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
     }
 
     @Override
-    public void loadData() {
+    public void loadData(int dataType) {
         Log.i("Log", "loadData");
-//        mSubscriber = new RequestSubscriber<List<MovieBrief>>() {
-//            @Override
-//            public void onStart() {
-//                super.onStart();
-//                Log.i("Log", "onStart");
-//            }
-//
-//            @Override
-//            public void onNext(List<MovieBrief> movieListResponse) {
-//                super.onNext(movieListResponse);
-//                Log.i("Log", "onNext");
-//                Log.i("Log", "movieListResponse = " + movieListResponse.toString());
-//                fragment.onLoadData(movieListResponse);
-//            }
-//
-//            @Override
-//            public void onCompleted() {
-//                super.onCompleted();
-//                Log.i("Log", "onCompleted");
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                super.onError(e);
-//                Log.i("Log", "onError");
-//                e.printStackTrace();
-////                if (e instanceof ResultException){
-//                    fragment.onLoadFailed(0, null);
-////                }
-//            }
-//        };
-//        Observable<List<MovieBrief>> observable;
-//        if (dataType == 0){
-//            observable = builder.getMovieInTheaterList(city);
-//        }else {
-//            observable = builder.getMovieInComingList(city);
-//        }
-//        observable.subscribe(mSubscriber);
+        String city = SPUtils.getCity();
+        if (TextUtils.isEmpty(city)){
+            fragment.onLocatingFailed();
+        }else {
+            mSubscriber = new RequestSubscriber<List<MovieBrief>>() {
+                @Override
+                public void onStart() {
+                    super.onStart();
+                    Log.i("Log", "onStart");
+                }
 
+                @Override
+                public void onNext(List<MovieBrief> movieListResponse) {
+                    super.onNext(movieListResponse);
+                    Log.i("Log", "onNext");
+                    Log.i("Log", "movieListResponse = " + movieListResponse.toString());
+                    fragment.onLoadData(movieListResponse);
+                }
+
+                @Override
+                public void onCompleted() {
+                    super.onCompleted();
+                    Log.i("Log", "onCompleted");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    super.onError(e);
+                    Log.i("Log", "onError");
+                    e.printStackTrace();
+//                if (e instanceof ResultException){
+                    fragment.onLoadFailed(0, null);
+//                }
+                }
+            };
+
+            Observable<List<MovieBrief>> observable;
+            if (dataType == 0) {
+                observable = builder.getMovieInTheaterList(city);
+            } else {
+                observable = builder.getMovieInComingList(city);
+            }
+            observable.subscribe(mSubscriber);
+        }
 
 
     }
 
-
-
-    @Override
-    public void loadData(int dataType) {
-        Log.i("Log", "loadData");
-        if (TextUtils.isEmpty(SPUtils.getCity())){
-            fragment.showPositioningDialog();
-
-        }
-        String city = SPUtils.getCity();
-        mSubscriber = new RequestSubscriber<List<MovieBrief>>() {
+    public void getLocation(){
+        mLocationSubscriber = new RequestSubscriber<String>(){
             @Override
-            public void onStart() {
-                super.onStart();
-                Log.i("Log", "onStart");
-            }
-
-            @Override
-            public void onNext(List<MovieBrief> movieListResponse) {
-                super.onNext(movieListResponse);
-                Log.i("Log", "onNext");
-                Log.i("Log", "movieListResponse = " + movieListResponse.toString());
-                fragment.onLoadData(movieListResponse);
+            public void onNext(String s) {
+                super.onNext(s);
+                SPUtils.saveCity(s);
+                loadData(fragment.getDataType());
             }
 
             @Override
             public void onCompleted() {
                 super.onCompleted();
-                Log.i("Log", "onCompleted");
             }
 
             @Override
             public void onError(Throwable e) {
                 super.onError(e);
-                Log.i("Log", "onError");
+                Log.i("Log", "OnError locating failed");
                 e.printStackTrace();
-//                if (e instanceof ResultException){
-                fragment.onLoadFailed(0, null);
-//                }
+                fragment.hideLocatingDialog();
             }
         };
-        Observable<List<MovieBrief>> observable;
-        if (dataType == 0){
-            observable = builder.getMovieInTheaterList(city);
-        }else {
-            observable = builder.getMovieInComingList(city);
-        }
-        observable.subscribe(mSubscriber);
+        Observable<String> locationCity = builder.getLocationCity();
+        locationCity.subscribe(mLocationSubscriber);
     }
+
 
     @Override
     public void unregister() {

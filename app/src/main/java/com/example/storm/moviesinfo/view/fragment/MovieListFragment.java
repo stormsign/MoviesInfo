@@ -1,12 +1,14 @@
 package com.example.storm.moviesinfo.view.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +74,10 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         return fragment;
     }
 
+    public int getDataType(){
+        return dataType;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mPresenter = new MovieListPresenterImpl();
@@ -96,7 +102,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         mMovieList.setRefreshListListener(new MyRecyclerView.ListRefreshableListener() {
             @Override
             public void onListRefreshing() {
-                mPresenter.loadData();
+                mPresenter.loadData(dataType);
             }
 
             @Override
@@ -121,7 +127,7 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dataType = getArguments().getInt("type");
-        mPresenter.loadData();
+        mPresenter.loadData(dataType);
         adapter.setFirstLoading(true);
     }
 
@@ -181,6 +187,40 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
     public void backToTop(){
         mMovieList.smoothScrollToPosition(0);
+    }
+
+    public void showLocatingDialog(String city){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getResources().getString(R.string.dialog_title_locating));
+        builder.setMessage(getResources().getString(R.string.dialog_message_start_locating));
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                if (adapter!=null){
+                    adapter.setFirstLoading(false);
+                    onLoadFailed(0, null);
+                }
+            }
+        });
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                mPresenter.getLocation();
+            }
+        });
+
+
+    }
+
+    public void hideLocatingDialog(){
+
+    }
+
+    public void onLocatingFailed(){
+        Toast.makeText(getActivity(), "定位失败", Toast.LENGTH_SHORT).show();
+        onLoadFailed(0, null);
     }
 
 }
