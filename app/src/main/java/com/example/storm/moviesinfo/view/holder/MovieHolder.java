@@ -1,5 +1,8 @@
 package com.example.storm.moviesinfo.view.holder;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
@@ -32,13 +35,15 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
     @Override
     public void setUpView(MovieBrief movie, int position) {
         Glide.with(itemView.getContext()).load(movie.getIconaddress())
-                .placeholder(R.drawable.svg_ic_attention)
-                .error(R.drawable.svg_ic_attention)
+//                .placeholder(R.drawable.svg_ic_attention)
+//                .error(R.drawable.svg_ic_attention)
                 .into((ImageView) getView(R.id.poster));
         ((TextView)getView(R.id.movieName)).setText(movie.getTvTitle());
 
         if (movie.getGrade()!=null) {   //设置评分
             SimpleRatingBar ratingBar = (SimpleRatingBar) getView(R.id.stars);
+            TextView rating = (TextView) getView(R.id.rating);
+            rating.setText(movie.getGrade() + " / 10");
             ratingBar.setVisibility(View.VISIBLE);
             ratingBar.setBorderColor(itemView.getContext().getResources()
                     .getColor(Colorful.getThemeDelegate().getAccentColor().getColorRes()));
@@ -47,6 +52,7 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
             ratingBar.setRating(Float.parseFloat(movie.getGrade())/2);
         }else {
             getView(R.id.stars).setVisibility(View.GONE);
+            getView(R.id.rating).setVisibility(View.GONE);
         }
         AutoColumnLinearLayout tags = ((AutoColumnLinearLayout)getView(R.id.tags));
         tags.setTotalSpanCount(2);
@@ -60,6 +66,15 @@ public class MovieHolder extends BaseViewHolder<MovieBrief> {
         ((TextView)getView(R.id.premiereTime)).setText(movie.getPlayDate().getShowname()+"："+movie.getPlayDate().getData());
         ((TextView)getView(R.id.director)).setText(movie.getDirector().getShowname() + "："+movie.getDirector().getData().getGroupString());
         ((TextView)getView(R.id.cast)).setText(movie.getStar().getShowname()+"："+movie.getStar().getData().getGroupString());
+
+
+        Animator[] animators = new Animator[]{
+                ObjectAnimator.ofFloat(itemView, View.ALPHA, 0, 1f).setDuration(500),
+                ObjectAnimator.ofFloat(itemView, View.TRANSLATION_Y, 200, 0).setDuration(500)
+        };
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(animators);
+        set.start();
     }
 
     //设置影片标签

@@ -39,17 +39,23 @@ public class MyRecyclerView extends RecyclerView {
     public boolean scrollingDown ;
     private MyScrollListener myScrollListener;
     private ListRefreshableListener listner;
+    private ItemClickListener.OnItemClickListener onItemClickListener;
+
+    private Context context;
 
     public MyRecyclerView(Context context) {
         super(context);
+        this.context = context;
     }
 
     public MyRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
     }
 
     public MyRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
     }
 
     public interface ListRefreshableListener{
@@ -60,6 +66,20 @@ public class MyRecyclerView extends RecyclerView {
 
     public void setRefreshListListener(ListRefreshableListener listener){
         listner = listener;
+    }
+
+    public void setOnItemClickListener(ItemClickListener.OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
+        this.addOnItemTouchListener(new ItemClickListener(context, this, this.onItemClickListener));
+    }
+
+    public HeaderFooterWrapper getWrapper(){
+        return wrapper;
+    }
+
+    @Override
+    public Adapter getAdapter() {
+        return this.wrapper.getInnerAdapter();
     }
 
     @Override
@@ -109,16 +129,13 @@ public class MyRecyclerView extends RecyclerView {
                     if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE
                             && dy > BUFFER_HEIGHT
                             && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {    //超过缓冲距离后开始下拉
-                        Log.i("Log", "1");
                         headerHeight = dy - BUFFER_HEIGHT;
                         if (header != null) {
-                            Log.i("Log", "2  headerheight=" + headerHeight);
                             ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
                             layoutParams.height = (int) headerHeight;
                             header.setLayoutParams(layoutParams);
                         }
                         if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT) {        //超过回复距离，图标变换，再拉之后松手就加载
-                            Log.i("Log", "3");
                             if (!refreshable) {
                                 refreshable = true;
                                 wrapper.setHeaderShow();
@@ -126,7 +143,6 @@ public class MyRecyclerView extends RecyclerView {
                         }
                     } else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW) {      //下拉时header已经处于显示状态
                         if (dy + headerHeight <= MAX_HEADERHEIGHT) {
-                            Log.i("Log", "4");
                             if (header != null) {
                                 ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
                                 layoutParams.height = (int) (headerHeight + dy);
@@ -138,21 +154,21 @@ public class MyRecyclerView extends RecyclerView {
                     }
 
                 }
-//                Log.i("Log", "height = "+headerHeight);
                 break;
             case MotionEvent.ACTION_UP:
-                if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE){
-                    if (dy >= BUFFER_HEIGHT){
-                        if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){
-                            wrapper.setHeaderStatus(HeaderFooterWrapper.HEADER_SHOW);
-                            Log.i("Log", "pullback");
-                            if (listner!=null){
-                                listner.onListRefreshing();
-                            }
-                            wrapper.setHeaderLoading();
-                            refreshable = false;
-                            hasHeader = true;
+                if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_HIDE) {
+                    if (dy >= BUFFER_HEIGHT
+                            && dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT
+                            && headerEnable) {
+                        wrapper.setHeaderStatus(HeaderFooterWrapper.HEADER_SHOW);
+                        Log.i("Log", "pullback");
+                        if (listner != null) {
+                            listner.onListRefreshing();
                         }
+                        wrapper.setHeaderLoading();
+                        refreshable = false;
+                        hasHeader = true;
+
                     }
                 }else if (wrapper.getHeaderStatus() == HeaderFooterWrapper.HEADER_SHOW){
 
@@ -245,11 +261,9 @@ public class MyRecyclerView extends RecyclerView {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE
-                    && firstVisibleItem == wrapper.getHeadersCount()
-                    && !headerEnable
-                    ) {
-                headerEnable = true;
+            if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                headerEnable = firstVisibleItem == wrapper.getHeadersCount();
+                Log.i("Log", "headerEnable = " + headerEnable);
             }
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && lastVisibleItem == wrapper.getItemCount() - 1
@@ -279,17 +293,15 @@ public class MyRecyclerView extends RecyclerView {
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             lastVisibleItem =
-                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
             firstVisibleItem =
-                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                    ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
             boolean isSignificantDelta = Math.abs(dy) > scrollDownThreshold;
                 //pagedown
                 if (dy > 0) {
-                    Log.i("Log", "up");
                     scrollingDown = false;
                 }else {
-                    Log.i("Log", "down");
                     scrollingDown = true;
                 }
         }

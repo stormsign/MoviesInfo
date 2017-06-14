@@ -1,22 +1,31 @@
 package com.example.storm.moviesinfo.view.fragment;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.storm.moviesinfo.R;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.presenter.impl.MovieListPresenterImpl;
+import com.example.storm.moviesinfo.view.activity.MainActivity;
+import com.example.storm.moviesinfo.view.activity.MovieDetailActivity;
 import com.example.storm.moviesinfo.view.adapter.MovieListAdapter;
 import com.example.storm.moviesinfo.view.iview.IMovieListFragment;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.HeaderFooterWrapper;
+import com.example.storm.moviesinfo.view.widget.MyRecyclerview.ItemClickListener;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.MyRecyclerView;
 import com.example.storm.moviesinfo.view.widget.MyRecyclerview.model.Visitor;
 
@@ -46,12 +55,27 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     private MovieListAdapter adapter;
     private HeaderFooterWrapper wrapper;
 
+    private MainActivity activity;
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (mMovieList.hasFooter){
+                mMovieList.removeFooter();
+            }
+        }
+    };
+
     public static MovieListFragment newInstance(int fragmentType){
         MovieListFragment fragment = new MovieListFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("type", fragmentType);
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    public int getDataType(){
+        return dataType;
     }
 
     @Override
@@ -68,49 +92,32 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
         View view = inflater.inflate(R.layout.fragment_movielist, container, false);
         ButterKnife.bind(this, view);
         list = new ArrayList<>();
+//        SPUtils.saveCity(city);
 
         mMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MovieListAdapter(list);
+        adapter = new MovieListAdapter(getActivity(), list);
         wrapper = new HeaderFooterWrapper(adapter);
         wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listheader, mMovieList, false));
         mMovieList.setAdapter(wrapper);
-        mMovieList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mMovieList.setRefreshListListener(new MyRecyclerView.ListRefreshableListener() {
             @Override
             public void onListRefreshing() {
-                mPresenter.loadData(city, dataType);
+                mPresenter.loadData(dataType);
             }
 
             @Override
             public void onListLoadMore() {
-//                mPresenter.loadData(city, dataType);
-//                final View footerview = View.inflate(getContext(), R.layout.item_listfooter, null);
-//                contentView.addView(footerview);
-//                ImageView loading = (ImageView) footerview.findViewById(R.id.loading);
-//                RotateAnimation rotate = new RotateAnimation(0, 360,
-//                        Animation.RELATIVE_TO_SELF, 0.5f,
-//                        Animation.RELATIVE_TO_SELF, 0.5f);
-//                rotate.setDuration(1000);
-//                rotate.setRepeatCount(Animation.INFINITE);
-//                loading.startAnimation(rotate);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(2000);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (mMovieList.hasFooter){
-                                        mMovieList.removeFooter();
-                                    }
-                                }
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+//                测试代码
+                handler.sendEmptyMessageDelayed(0, 2000);
+            }
+        });
+        mMovieList.setOnItemClickListener(new ItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                MovieBrief movie = (MovieBrief) list.get(position);
+                Toast.makeText(getActivity(), "movie name = " + movie.getTvTitle(), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), MovieDetailActivity.class)
+                        .putExtra("posterUrl", movie.getIconaddress()));
             }
         });
         return view;
@@ -120,8 +127,14 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dataType = getArguments().getInt("type");
-        mPresenter.loadData(city, dataType);
+        mPresenter.loadData(dataType);
+        adapter.setFirstLoading(true);
+    }
 
+    @Override
+    public void onAttach(Context context) {
+        this.activity = (MainActivity) context;
+        super.onAttach(context);
     }
 
     @Override
@@ -131,8 +144,21 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
             mPresenter.unregister();
     }
 
+    public void showPositioningDialog(){
+        if (activity!=null){
+            activity.showPositioningDialog();
+        }
+    }
+
+    public void hidePositioningDialog(){
+        if (activity!=null){
+            activity.hidePositioningDialog();
+        }
+    }
+
     @Override
     public void onLoadData(List<MovieBrief> movieList) {
+        adapter.setFirstLoading(false);
         list.clear();
         list.addAll(movieList);
         wrapper.notifyDataSetChanged();
@@ -146,6 +172,55 @@ public class MovieListFragment extends Fragment implements IMovieListFragment{
 
     @Override
     public void onLoadFailed(int errCode, String msg) {
+        mMovieList.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                adapter.setHasNoData(true);
+                list.clear();
+                wrapper.notifyDataSetChanged();
+                if (mMovieList.hasHeader){
+                    mMovieList.removeHeader();
+                }
+            }
+        }, 1000);
+    }
+
+    public void backToTop(){
+        mMovieList.smoothScrollToPosition(0);
+    }
+
+    public void showLocatingDialog(String city){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getResources().getString(R.string.dialog_title_locating));
+        builder.setMessage(getResources().getString(R.string.dialog_message_start_locating));
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                if (adapter!=null){
+                    adapter.setFirstLoading(false);
+                    onLoadFailed(0, null);
+                }
+            }
+        });
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                mPresenter.getLocation();
+            }
+        });
+
 
     }
+
+    public void hideLocatingDialog(){
+
+    }
+
+    public void onLocatingFailed(){
+        Toast.makeText(getActivity(), "定位失败", Toast.LENGTH_SHORT).show();
+        onLoadFailed(0, null);
+    }
+
 }

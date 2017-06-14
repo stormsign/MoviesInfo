@@ -1,9 +1,15 @@
 package com.example.storm.moviesinfo.net;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.example.storm.moviesinfo.App;
 import com.example.storm.moviesinfo.model.movieinfo.MovieResponse;
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.model.movielist.MovieList;
@@ -23,6 +29,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -37,7 +44,7 @@ public class RequestBuilder {
     private final MovieRequestService service;
     private Call<MovieResponse> movieInfoCall;
 
-    public RequestBuilder(){
+    public RequestBuilder() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.JUHE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -46,7 +53,7 @@ public class RequestBuilder {
         service = retrofit.create(MovieRequestService.class);
     }
 
-    public void getMovie(String name){
+    public void getMovie(String name) {
         movieInfoCall = service.getMovieInfo("json", name, Constants.JUHE_KEY);
         movieInfoCall.enqueue(new Callback<MovieResponse>() {
             @Override
@@ -61,12 +68,12 @@ public class RequestBuilder {
         });
     }
 
-    public void getMoviePost(String name){
+    public void getMoviePost(String name) {
         Call<MovieResponse> movieInfoPost = service.getMovieInfoPost("json", name, Constants.JUHE_KEY);
         movieInfoPost.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                Log.i("Log", "POST  "+response.body().toString());
+                Log.i("Log", "POST  " + response.body().toString());
             }
 
             @Override
@@ -77,7 +84,7 @@ public class RequestBuilder {
 
     }
 
-    public void getMoviePost2(String name){
+    public void getMoviePost2(String name) {
         Map<String, Object> map = new HashMap<>();
         map.put("dtype", "json");
         map.put("q", name);
@@ -86,7 +93,7 @@ public class RequestBuilder {
         movieInfoPost.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                Log.i("Log", "POST  "+response.body().toString());
+                Log.i("Log", "POST  " + response.body().toString());
             }
 
             @Override
@@ -97,7 +104,7 @@ public class RequestBuilder {
 
     }
 
-    public void getMovieInfo(final Context context, String name){
+    public void getMovieInfo(final Context context, String name) {
         Map<String, Object> map = new HashMap<>();
         map.put("dtype", "json");
         map.put("q", name);
@@ -140,8 +147,8 @@ public class RequestBuilder {
                 });
     }
 
-//    正在上映电影列表
-    public Observable<List<MovieBrief>> getMovieInTheaterList(String city){
+    //    正在上映电影列表
+    public Observable<List<MovieBrief>> getMovieInTheaterList(String city) {
         Map<String, Object> map = new HashMap<>();
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
@@ -155,8 +162,8 @@ public class RequestBuilder {
                             MovieListWrapper result = movieListResponse.getResult();
                             if (result != null) {   //数据有效
                                 MovieList movieList = result.getData().get(0);
-                                if (movieList!=null ){   //正在上映电影数据有效
-                                    if (movieList.getData()!=null && movieList.getData().size()>0){     //正在上映电影列表不为空
+                                if (movieList != null) {   //正在上映电影数据有效
+                                    if (movieList.getData() != null && !movieList.getData().isEmpty()) {     //正在上映电影列表不为空
                                         return movieList.getData();
                                     }
                                     throw new ResultException(ResultException.EMPTY,
@@ -174,8 +181,9 @@ public class RequestBuilder {
                 });
         return movieList;
     }
-//    即将上映电影列表
-    public Observable<List<MovieBrief>> getMovieInComingList(String city){
+
+    //    即将上映电影列表
+    public Observable<List<MovieBrief>> getMovieInComingList(String city) {
         Map<String, Object> map = new HashMap<>();
         map.put("city", city);
         map.put("key", Constants.JUHE_KEY);
@@ -202,4 +210,38 @@ public class RequestBuilder {
                 });
         return movieList;
     }
+
+    public Observable<String> getLocationCity(){
+        Observable<String> stringObservable = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                AMapLocationClient client = new AMapLocationClient(App.getAppContext());
+                AMapLocationClientOption option = new AMapLocationClientOption();
+                option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
+                option.setOnceLocation(true);
+                client.setLocationOption(option);
+                client.setLocationListener(new AMapLocationListener() {
+                    @Override
+                    public void onLocationChanged(AMapLocation aMapLocation) {
+                        subscriber.onNext(aMapLocation.getCity());
+                        subscriber.onCompleted();
+                    }
+                });
+            }
+        });
+        stringObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        if (TextUtils.isEmpty(s)){
+                            throw new ResultException(-2, "定位失败");
+                        }
+                    }
+                });
+
+        return stringObservable;
+    }
+
 }

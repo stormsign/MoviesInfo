@@ -25,7 +25,6 @@ public class RequestSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onNext(T t) {
-
     }
 
     public void onFinally(){

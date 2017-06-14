@@ -9,4 +9,6 @@ public class Constants {
     public static final String JUHE_KEY = "39cabbbfad378ad59b2bbd0c9cb17897";
     public static final String YIYUAN_APPID = "33581";
     public static final String YIYUAN_SECRET = "7f94e39ab1ed4b64a584cd08ca16b956";
+
+    public static final String GD_APPKEY = "8c5886a92e83aea5857868b467cf21f3";
 }

@@ -7,14 +7,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -37,7 +39,7 @@ import org.polaric.colorful.Colorful;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements ServiceConnection {
+public class MainActivity extends BaseActivity implements ServiceConnection, NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.main_drawer)
     DrawerLayout mDrawer;
@@ -59,6 +61,8 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
     private double lon;
     private String locationMsg;
     private ILocationService locationService;
+    private FloatingActionButton mFab;
+    private AppCompatDialog dialog;
     //    private LocationService.MyBinder binder;
 
     @Override
@@ -71,22 +75,10 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
         mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                isAppBarCollapsed = verticalOffset>0;   //appbar是否被折叠，作为是否需要回到顶端的依据
+                isAppBarCollapsed = verticalOffset<0;   //appbar是否被折叠，作为是否需要回到顶端的依据
             }
         });
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.main_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    Toast.makeText(MainActivity.this, locationService.notifyLocation(), Toast.LENGTH_LONG).show();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-            }
-        });
+        mFab = (FloatingActionButton) findViewById(R.id.main_fab);
 
         //toolbar左侧的material design风格箭头
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, mToolBar,
@@ -95,14 +87,29 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
         toggle.syncState();
 
         mTab.setBackgroundResource(Colorful.getThemeDelegate().getPrimaryColor().getColorRes());
-        MovieListFragment fragment0 = MovieListFragment.newInstance(0);
+        final MovieListFragment fragment0 = MovieListFragment.newInstance(0);
         MovieListFragment fragment1 = MovieListFragment.newInstance(1);
-        Fragment[] fragments = new Fragment[]{fragment0, fragment1};
+        final MovieListFragment[] fragments = new MovieListFragment[]{fragment0, fragment1};
         TabAdapter adapter = new TabAdapter(getSupportFragmentManager(), fragments);
         adapter.setPageTitle(new String[]{"正在上映", "即将上映"});
         mPager.setAdapter(adapter);
         mTab.setupWithViewPager(mPager);
-
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isAppBarCollapsed){
+                    fragments[mPager.getCurrentItem()].backToTop();
+                    mAppBar.setExpanded(true);
+                }
+//                try {
+//                    Toast.makeText(MainActivity.this, locationService.notifyLocation(), Toast.LENGTH_LONG).show();
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                }
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+            }
+        });
 
         //左侧抽屉导航栏
         ImageView drawerHeaderImg = (ImageView) mNav.getHeaderView(0).findViewById(R.id.drawer_header_img);
@@ -122,22 +129,31 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
 
             }
         });
+        mNav.setNavigationItemSelectedListener(this);
+        //开启定位服务
         Intent intent = new Intent(this, LocationService.class);
         intent.setPackage("com.example.storm.moviesinfo.service");
-        bindService(intent, this, BIND_AUTO_CREATE);
+//        bindService(intent, this, BIND_AUTO_CREATE);
 
 
     }
 
     @Override
     protected void onDestroy() {
-        unbindService(this);
+//        unbindService(this);
         super.onDestroy();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        final MenuItem item = menu.findItem(R.id.action_settings);
+        item.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(item);
+            }
+        });
         return true;
     }
 
@@ -146,6 +162,8 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            Toast.makeText(MainActivity.this, "票房", Toast.LENGTH_SHORT).show();
+//            startActivity(new Intent(MainActivity.this, BoxOfficeActivity.class));
             return true;
         }
 
@@ -153,6 +171,51 @@ public class MainActivity extends BaseActivity implements ServiceConnection {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (hasFocus){
+            mFab.hide();
+        }
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_theme:
+                startActivity(new Intent(MainActivity.this, ThemeActivity.class));
+                break;
+            case R.id.menu_settings:
+
+                break;
+            case R.id.menu_share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "分享内容");
+                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(Intent.createChooser(shareIntent, "分享"));
+                break;
+        }
+        return false;
+    }
+
+    public void showPositioningDialog(){
+        dialog = new AppCompatDialog(this);
+        dialog.setContentView(R.layout.dialog_hint_positioning);
+        ((TextView) dialog.findViewById(R.id.message)).setText(getResources().getText(R.string.text_positioning));
+        dialog.show();
+    }
+
+    public void hidePositioningDialog(){
+        if (dialog!=null){
+            dialog.hide();
+        }
+    }
+
+
+
+    @Override
+
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.i("Log", "onServiceConnected");
         locationService = ILocationService.Stub.asInterface(service);
