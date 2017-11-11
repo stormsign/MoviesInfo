@@ -68,6 +68,9 @@
             android:name=".view.activity.MovieDetailActivity"
             android:label="@string/title_activity_movie_detail"
             android:theme="@style/AppTheme" />
+        <activity android:name=".view.activity.ThemeActivity"
+            android:label="@string/title_activity_theme"/>
+
 
     </application>
 

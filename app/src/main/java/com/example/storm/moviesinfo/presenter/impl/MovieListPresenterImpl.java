@@ -2,10 +2,12 @@ package com.example.storm.moviesinfo.presenter.impl;
 
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.storm.moviesinfo.model.movielist.MovieBrief;
 import com.example.storm.moviesinfo.net.RequestBuilder;
 import com.example.storm.moviesinfo.net.RequestSubscriber;
+import com.example.storm.moviesinfo.net.ResultException;
 import com.example.storm.moviesinfo.presenter.IMovieListPresenter;
 import com.example.storm.moviesinfo.util.SPUtils;
 import com.example.storm.moviesinfo.view.fragment.MovieListFragment;
@@ -34,6 +36,7 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
     public void loadData(int dataType) {
         Log.i("Log", "loadData");
         String city = SPUtils.getCity();
+        city = "深圳";
         if (TextUtils.isEmpty(city)){
             fragment.onLocatingFailed();
         }else {
@@ -63,9 +66,11 @@ public class MovieListPresenterImpl implements IMovieListPresenter {
                     super.onError(e);
                     Log.i("Log", "onError");
                     e.printStackTrace();
-//                if (e instanceof ResultException){
-                    fragment.onLoadFailed(0, null);
-//                }
+                    if (e instanceof ResultException){
+                        ResultException re = (ResultException) e;
+                        Toast.makeText(fragment.getContext(), re.getMsg(), Toast.LENGTH_SHORT).show();
+                        fragment.onLoadFailed(0, null);
+                    }
                 }
             };
 

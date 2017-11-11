@@ -107,4 +107,5 @@
     <string name="text_positioning">未设置位置，正在自动定位</string>
     <string name="dialog_title_locating">开始定位</string>
     <string name="dialog_message_start_locating">没有找到城市信息，将自动定位你所在的城市</string>
+    <string name="title_activity_theme">主题页</string>
 </resources>

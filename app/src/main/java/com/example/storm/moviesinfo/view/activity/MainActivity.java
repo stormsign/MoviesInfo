@@ -162,8 +162,8 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Nav
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            Toast.makeText(MainActivity.this, "票房", Toast.LENGTH_SHORT).show();
-//            startActivity(new Intent(MainActivity.this, BoxOfficeActivity.class));
+//            Toast.makeText(MainActivity.this, "票房", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, BoxOfficeActivity.class));
             return true;
         }
 
